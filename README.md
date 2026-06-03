@@ -38,3 +38,13 @@ Varsayılan PIN: `1453`
 
 Netlify ortam değişkeni ile değiştirmek istersen:
 `KP_ADMIN_PIN`
+
+
+## v5.4 Görsel Efekt Paketi
+
+Eklenenler:
+- En kârlı item altın parıltı efekti
+- Yeni kayıt ekleme animasyonu
+- Sağ üst bildirim animasyonu
+- Kart hover/parlama efekti
+- Knight Online tarzı altın aura ve item rarity hissi

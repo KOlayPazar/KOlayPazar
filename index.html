@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-<title>KOlayPazar v5.2 NETLIFY + FIREBASE CANLI GB</title>
+<title>KOlayPazar v5.4 GÖRSEL EFEKTLER</title>
 <style>
 :root{
   --bg:#030201;--panel:#0b0805;--panel2:#120d07;--line:#6a4314;--line2:#b97c27;
@@ -567,6 +567,176 @@ body{
   white-space:nowrap;
 }
 
+
+/* v5.4 Görsel Efekt Paketi */
+
+/* Knight Online hissi: genel altın aura */
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  z-index:0;
+  background:
+    radial-gradient(circle at 15% 8%, rgba(255,190,55,.12), transparent 26%),
+    radial-gradient(circle at 85% 18%, rgba(255,120,20,.08), transparent 24%),
+    radial-gradient(circle at 50% 100%, rgba(255,210,90,.08), transparent 32%);
+  animation:kpAuraMove 8s ease-in-out infinite alternate;
+}
+@keyframes kpAuraMove{
+  from{opacity:.55;filter:blur(0)}
+  to{opacity:.95;filter:blur(1px)}
+}
+
+/* Altın ışık çizgisi */
+.panel, .record, .gb-row, .stock-row, .kp-gb-live-row{
+  position:relative;
+  overflow:hidden;
+}
+.panel::after, .record::after, .gb-row::after, .stock-row::after, .kp-gb-live-row::after{
+  content:"";
+  position:absolute;
+  top:-40%;
+  left:-70%;
+  width:45%;
+  height:180%;
+  pointer-events:none;
+  background:linear-gradient(90deg, transparent, rgba(255,224,138,.18), transparent);
+  transform:rotate(18deg);
+  opacity:0;
+}
+.panel:hover::after, .record:hover::after, .gb-row:hover::after, .stock-row:hover::after, .kp-gb-live-row:hover::after{
+  animation:kpGoldSweep .85s ease;
+}
+@keyframes kpGoldSweep{
+  0%{left:-70%;opacity:0}
+  20%{opacity:1}
+  100%{left:130%;opacity:0}
+}
+
+/* Kart hover efekti */
+.record, .gb-row, .stock-row, .kp-gb-live-row, .setting-card, .panel{
+  transition:transform .22s ease, box-shadow .22s ease, border-color .22s ease;
+}
+.record:hover, .gb-row:hover, .stock-row:hover, .kp-gb-live-row:hover, .setting-card:hover{
+  transform:translateY(-3px) scale(1.01);
+  border-color:#ffd56a !important;
+  box-shadow:0 0 18px rgba(255,196,64,.25), 0 10px 24px rgba(0,0,0,.5) !important;
+}
+
+/* Yeni kayıt ekleme animasyonu */
+.record.kp-new-record{
+  animation:kpRecordEnter .75s cubic-bezier(.18,.9,.22,1.15), kpNewGlow 2.2s ease;
+}
+@keyframes kpRecordEnter{
+  from{opacity:0;transform:translateY(-18px) scale(.96)}
+  to{opacity:1;transform:translateY(0) scale(1)}
+}
+@keyframes kpNewGlow{
+  0%,100%{box-shadow:0 6px 14px rgba(0,0,0,.43)}
+  35%{box-shadow:0 0 24px rgba(73,228,72,.55), 0 8px 26px rgba(0,0,0,.6)}
+}
+
+/* En kârlı item efekti */
+.record.kp-top-profit{
+  border-left-color:#ffe066 !important;
+  box-shadow:0 0 0 1px rgba(255,224,102,.4), 0 0 26px rgba(255,196,64,.26), 0 8px 24px rgba(0,0,0,.55) !important;
+}
+.record.kp-top-profit::before{
+  content:"🏆 EN KÂRLI";
+  position:absolute;
+  right:10px;
+  top:8px;
+  z-index:3;
+  padding:3px 8px;
+  border-radius:999px;
+  border:1px solid rgba(255,224,102,.75);
+  background:rgba(60,36,0,.88);
+  color:#ffe680;
+  font-size:10px;
+  font-weight:900;
+  letter-spacing:.4px;
+  animation:kpTopPulse 1.8s ease-in-out infinite;
+}
+@keyframes kpTopPulse{
+  0%,100%{transform:scale(1);filter:brightness(1)}
+  50%{transform:scale(1.05);filter:brightness(1.35)}
+}
+
+/* Sağ üst bildirim animasyonu */
+#kpToastArea{
+  position:fixed;
+  top:14px;
+  right:14px;
+  z-index:9999;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  pointer-events:none;
+}
+.kp-toast{
+  min-width:230px;
+  max-width:310px;
+  padding:12px 14px;
+  border:1px solid rgba(255,224,102,.75);
+  border-radius:12px;
+  background:linear-gradient(180deg, rgba(32,22,5,.96), rgba(7,6,4,.96));
+  color:#ffe9a8;
+  box-shadow:0 0 22px rgba(255,196,64,.22), 0 10px 28px rgba(0,0,0,.55);
+  font-size:13px;
+  line-height:1.35;
+  animation:kpToastIn .35s ease, kpToastOut .35s ease 3.4s forwards;
+}
+.kp-toast strong{
+  display:block;
+  color:#71ff75;
+  font-size:15px;
+  margin-bottom:3px;
+}
+@keyframes kpToastIn{
+  from{opacity:0;transform:translateX(40px) scale(.96)}
+  to{opacity:1;transform:translateX(0) scale(1)}
+}
+@keyframes kpToastOut{
+  to{opacity:0;transform:translateX(40px) scale(.96)}
+}
+
+/* Knight Online item rarity hissi */
+.record[data-rarity="unique"]{
+  border-color:#d7a629 !important;
+}
+.record[data-rarity="rare"]{
+  border-color:#9f5dff !important;
+}
+.record[data-rarity="normal"]{
+  border-color:#5f3d13 !important;
+}
+
+/* Buton basma hissi */
+button{
+  transition:transform .12s ease, filter .18s ease, box-shadow .18s ease;
+}
+button:active{
+  transform:scale(.97);
+}
+.save-btn:hover, .mini-btn:hover, .action-btn:hover{
+  filter:brightness(1.18);
+  box-shadow:0 0 14px rgba(255,196,64,.25);
+}
+
+/* Mobilde bildirim daralsın */
+@media(max-width:760px){
+  #kpToastArea{
+    top:8px;
+    right:8px;
+    left:8px;
+  }
+  .kp-toast{
+    max-width:none;
+    width:100%;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -733,7 +903,7 @@ body{
 
 <footer class="footer">
   <span>🛡️ Moradon’da kazanç seninle olsun!</span>
-  <span>KOlayPazar v5.2 NETLIFY + FIREBASE CANLI GB</span>
+  <span>KOlayPazar v5.4 GÖRSEL EFEKTLER</span>
 </footer>
 </main>
 </div>
