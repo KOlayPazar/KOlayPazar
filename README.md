@@ -48,3 +48,12 @@ Eklenenler:
 - Sağ üst bildirim animasyonu
 - Kart hover/parlama efekti
 - Knight Online tarzı altın aura ve item rarity hissi
+
+
+## v5.5.1 Knight Görsel Pro
+
+Daha belirgin görsel değişiklikler:
+- Güçlendirilmiş Knight Online aura + yıldız arka planı
+- Görünür rarity etiketleri: RARE / UNIQUE / LEGENDARY
+- Sabit modern ikonlu alt menü
+- Mobilde alt menü desteği
