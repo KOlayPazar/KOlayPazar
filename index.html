@@ -737,6 +737,26 @@ button:active{
   }
 }
 
+
+/* v5.6 Premium GB Grafik */
+.gb-graph-panel{
+  position:relative; overflow:hidden; border:1px solid rgba(255,190,70,.35);
+  background:radial-gradient(circle at top left,rgba(255,189,46,.18),transparent 34%),linear-gradient(180deg,rgba(21,14,5,.96),rgba(7,6,4,.98));
+  box-shadow:0 0 28px rgba(255,169,34,.10), inset 0 0 32px rgba(255,198,71,.05);
+}
+.gb-graph-panel:before{content:"";position:absolute;inset:-60px;background:linear-gradient(115deg,transparent 25%,rgba(255,223,122,.08),transparent 55%);transform:translateX(-70%);animation:gbShine 6s infinite;pointer-events:none}
+@keyframes gbShine{0%,55%{transform:translateX(-80%)}100%{transform:translateX(80%)}}
+.gb-graph-toolbar{display:grid;grid-template-columns:1fr 1fr auto;gap:10px;align-items:end;margin:12px 0}
+.gb-graph-card{position:relative;border:1px solid #3a270d;border-radius:14px;background:linear-gradient(180deg,#120d06,#070604);padding:12px;box-shadow:inset 0 0 24px rgba(255,198,71,.04)}
+.gb-chart-wrap{height:320px;position:relative}
+#gbTrendCanvas{width:100%;height:100%;display:block;border-radius:12px;background:linear-gradient(180deg,rgba(255,211,91,.045),rgba(0,0,0,.12))}
+.gb-graph-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:12px}
+.gb-stat-card{border:1px solid #3a270d;border-radius:12px;padding:12px;background:linear-gradient(180deg,#171006,#090705)}
+.gb-stat-card small{display:block;color:#a58c5e;font-size:12px;margin-bottom:5px}.gb-stat-card strong{font-size:18px;color:#ffe2a0}.gb-stat-card .green{color:#54ff8c}.gb-stat-card .red{color:#ff7474}
+.gb-legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}.gb-legend span{border:1px solid #3a270d;border-radius:999px;padding:6px 10px;background:#0d0904;color:#d7c39b;font-size:12px}
+.gb-graph-empty{padding:26px;text-align:center;color:#bfa77b;border:1px dashed #4a3515;border-radius:14px;background:rgba(0,0,0,.18)}
+@media(max-width:760px){.gb-graph-toolbar{grid-template-columns:1fr}.gb-graph-stats{grid-template-columns:1fr 1fr}.gb-chart-wrap{height:260px}}
+
 </style>
 </head>
 <body>
@@ -779,6 +799,7 @@ button:active{
     <div class="tabs">
       <button type="button" class="tab active" data-tab="pazar">💰 Pazar Kayıtları</button>
       <button type="button" class="tab" data-tab="istatistik">◔ İstatistikler</button>
+      <button type="button" class="tab" data-tab="gbgrafik">📈 GB Grafik</button>
       <button type="button" class="tab" data-tab="stok">📦 Stok Merkezi</button>
       <button type="button" class="tab" data-tab="itemler">⚔️ İtem Listesi</button>
       <button type="button" class="tab" data-tab="ayarlar">⚙️ Ayarlar</button>
@@ -818,6 +839,45 @@ button:active{
         <div class="sum-row"><span>Drop Stok Kârı</span><strong class="coin blue" id="dropKarStat">0</strong></div>
         <div class="sum-row"><span>Bekleyen Kayıt Sayısı</span><strong id="bekleyenSayisi">0</strong></div>
         <div class="sum-row"><span>Tamamlanan Kayıt Sayısı</span><strong id="tamamlananSayisi">0</strong></div>
+      </div>
+    </div>
+
+
+    <div id="tab-gbgrafik" class="tab-content">
+      <div class="settings-panel gb-graph-panel">
+        <h3 class="panel-title">📈 Premium GB Fiyat Grafiği</h3>
+        <div class="type-note">EnUcuzGB tarzı canlı görünüm: fiyatlar geldikçe yerelde geçmiş oluşturur, en ucuz/pahalı ve ortalamayı otomatik hesaplar.</div>
+        <div class="gb-graph-toolbar">
+          <div>
+            <label>Sunucu</label>
+            <select id="gbGraphServer">
+              <option value="zero" selected>Zero</option>
+              <option value="agartha">Agartha</option>
+              <option value="pandora">Pandora</option>
+              <option value="felis">Felis</option>
+              <option value="destan">Destan</option>
+            </select>
+          </div>
+          <div>
+            <label>Grafik Modu</label>
+            <select id="gbGraphMode">
+              <option value="cheapest" selected>En ucuz fiyat trendi</option>
+              <option value="average">Ortalama fiyat trendi</option>
+            </select>
+          </div>
+          <button type="button" class="mini-btn" id="gbGraphClear">Grafik Geçmişini Temizle</button>
+        </div>
+        <div class="gb-graph-card">
+          <div class="gb-chart-wrap"><canvas id="gbTrendCanvas"></canvas></div>
+          <div class="gb-legend" id="gbGraphLegend"></div>
+        </div>
+        <div class="gb-graph-stats">
+          <div class="gb-stat-card"><small>En Ucuz</small><strong class="green" id="gbGraphCheap">-</strong></div>
+          <div class="gb-stat-card"><small>En Pahalı</small><strong class="red" id="gbGraphExpensive">-</strong></div>
+          <div class="gb-stat-card"><small>Ortalama</small><strong id="gbGraphAvg">-</strong></div>
+          <div class="gb-stat-card"><small>Son Güncelleme</small><strong id="gbGraphUpdated">-</strong></div>
+        </div>
+        <div class="gb-graph-empty" id="gbGraphEmpty" style="display:none">Grafik için canlı GB verisi bekleniyor.</div>
       </div>
     </div>
 
@@ -1238,6 +1298,7 @@ function aktifTab(tab){
   document.querySelectorAll(".tab").forEach(x=>x.classList.toggle("active",x.dataset.tab===tab));
   document.querySelectorAll(".tab-content").forEach(x=>x.classList.remove("active"));
   el("tab-"+tab).classList.add("active");
+  if(tab === "gbgrafik") setTimeout(drawGbTrend, 80);
 }
 
 function loadGbSources(){
@@ -1277,6 +1338,62 @@ async function fetchLocalGb(){
   return results;
 }
 
+
+
+/* v5.6 Premium GB Grafik */
+const GB_GRAPH_KEY = "kolaypazar_gb_graph_history_v56";
+function gbGraphServer(){ return (el("gbGraphServer") && el("gbGraphServer").value) || "zero"; }
+function gbGraphMode(){ return (el("gbGraphMode") && el("gbGraphMode").value) || "cheapest"; }
+function gbHistoryLoad(){ try{return JSON.parse(localStorage.getItem(GB_GRAPH_KEY)||"[]");}catch(e){return [];} }
+function gbHistorySave(rows){ localStorage.setItem(GB_GRAPH_KEY, JSON.stringify(rows.slice(-160))); }
+function gbPushHistory(validRows){
+  if(!validRows || !validRows.length) return;
+  const server = gbGraphServer();
+  const prices = validRows.map(x=>Number(x.price)).filter(Number.isFinite);
+  if(!prices.length) return;
+  const sorted = [...validRows].filter(x=>Number.isFinite(Number(x.price))).sort((a,b)=>Number(a.price)-Number(b.price));
+  const avg = prices.reduce((a,b)=>a+b,0)/prices.length;
+  const point = {t:Date.now(), server, cheapest:Number(sorted[0].price), average:avg, minSite:sorted[0].site, max:Number(sorted[sorted.length-1].price), maxSite:sorted[sorted.length-1].site, count:prices.length};
+  const h = gbHistoryLoad();
+  const last = h[h.length-1];
+  if(last && last.server===point.server && Math.abs(last.t-point.t)<25000){ h[h.length-1]=point; } else { h.push(point); }
+  gbHistorySave(h);
+}
+function drawGbTrend(){
+  const canvas = el("gbTrendCanvas"); if(!canvas) return;
+  const empty = el("gbGraphEmpty");
+  const server = gbGraphServer(); const mode = gbGraphMode();
+  const rows = gbHistoryLoad().filter(x=>x.server===server && Number.isFinite(Number(x[mode]))).slice(-36);
+  const ctx = canvas.getContext("2d");
+  const dpr = window.devicePixelRatio || 1;
+  const rect = canvas.getBoundingClientRect();
+  canvas.width = Math.max(320, Math.floor(rect.width*dpr)); canvas.height = Math.max(220, Math.floor(rect.height*dpr));
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  const w = rect.width, h = rect.height; ctx.clearRect(0,0,w,h);
+  const grad = ctx.createLinearGradient(0,0,0,h); grad.addColorStop(0,"rgba(255,214,91,.10)"); grad.addColorStop(1,"rgba(0,0,0,.04)"); ctx.fillStyle=grad; ctx.fillRect(0,0,w,h);
+  if(!rows.length){ if(empty) empty.style.display="block"; updateGbGraphStats([]); return; }
+  if(empty) empty.style.display="none";
+  const pad = {l:54,r:18,t:22,b:42}; const vals = rows.map(x=>Number(x[mode]));
+  let min = Math.min(...vals), max = Math.max(...vals); if(min===max){min-=1;max+=1;} const span = max-min; min-=span*.12; max+=span*.12;
+  ctx.strokeStyle="rgba(255,224,152,.12)"; ctx.lineWidth=1; ctx.font="12px Arial"; ctx.fillStyle="rgba(230,203,151,.75)";
+  for(let i=0;i<5;i++){ const y=pad.t+(h-pad.t-pad.b)*(i/4); ctx.beginPath(); ctx.moveTo(pad.l,y); ctx.lineTo(w-pad.r,y); ctx.stroke(); const val=max-(max-min)*(i/4); ctx.fillText(tl(val).replace(" TL",""),8,y+4); }
+  const xFor=i=> pad.l + (rows.length===1 ? 0 : (w-pad.l-pad.r)*(i/(rows.length-1)));
+  const yFor=v=> pad.t + (max-v)/(max-min)*(h-pad.t-pad.b);
+  const lineGrad = ctx.createLinearGradient(0,pad.t,w,h-pad.b); lineGrad.addColorStop(0,"#fff0a6"); lineGrad.addColorStop(.55,"#ffba34"); lineGrad.addColorStop(1,"#49e448");
+  ctx.beginPath(); rows.forEach((r,i)=>{ const x=xFor(i), y=yFor(Number(r[mode])); if(i) ctx.lineTo(x,y); else ctx.moveTo(x,y); }); ctx.strokeStyle=lineGrad; ctx.lineWidth=3; ctx.shadowColor="rgba(255,188,52,.45)"; ctx.shadowBlur=12; ctx.stroke(); ctx.shadowBlur=0;
+  rows.forEach((r,i)=>{ const x=xFor(i), y=yFor(Number(r[mode])); ctx.beginPath(); ctx.arc(x,y,4,0,Math.PI*2); ctx.fillStyle="#ffcf5a"; ctx.fill(); ctx.strokeStyle="rgba(0,0,0,.55)"; ctx.stroke(); });
+  const first=rows[0], last=rows[rows.length-1]; ctx.fillStyle="rgba(230,203,151,.75)"; ctx.fillText(formatTime(first.t), pad.l, h-16); ctx.textAlign="right"; ctx.fillText(formatTime(last.t), w-pad.r, h-16); ctx.textAlign="left";
+  updateGbGraphStats(rows);
+}
+function updateGbGraphStats(rows){
+  const latest = rows[rows.length-1];
+  if(!latest){ ["gbGraphCheap","gbGraphExpensive","gbGraphAvg","gbGraphUpdated"].forEach(id=>{ if(el(id)) el(id).innerText="-"; }); if(el("gbGraphLegend")) el("gbGraphLegend").innerHTML=""; return; }
+  el("gbGraphCheap").innerText = `${latest.minSite || "-"} ${tl(latest.cheapest)}`;
+  el("gbGraphExpensive").innerText = `${latest.maxSite || "-"} ${tl(latest.max)}`;
+  el("gbGraphAvg").innerText = tl(latest.average);
+  el("gbGraphUpdated").innerText = formatTime(latest.t);
+  el("gbGraphLegend").innerHTML = `<span>Sunucu: ${escapeHtml(latest.server)}</span><span>${latest.count} kaynak</span><span>Mod: ${gbGraphMode()==="average"?"Ortalama":"En ucuz"}</span>`;
+}
 
 async function renderGb(){
   let liveRows = [];
@@ -1325,6 +1442,9 @@ async function renderGb(){
     <div class="gb-price">${Number.isFinite(Number(x.price)) ? tl(Number(x.price)) : "Hata"}</div>
   </div>`).join("");
 
+  gbPushHistory(valid);
+  drawGbTrend();
+
   const cheapest = valid[0];
   const avg = valid.length ? valid.reduce((t,x)=>t+Number(x.price),0)/valid.length : 0;
   el("gbSonDurum").innerText = cheapest
@@ -1355,6 +1475,10 @@ el("sirala").addEventListener("change",goster);
 document.querySelectorAll(".tab").forEach(t=>t.addEventListener("click",()=>aktifTab(t.dataset.tab)));
 el("gbYenileBtn").addEventListener("click",renderGb);
 el("gbInterval").addEventListener("change",resetGbTimer);
+if(el("gbGraphServer")) el("gbGraphServer").addEventListener("change",()=>{ renderGb(); drawGbTrend(); });
+if(el("gbGraphMode")) el("gbGraphMode").addEventListener("change",drawGbTrend);
+if(el("gbGraphClear")) el("gbGraphClear").addEventListener("click",()=>{ if(confirm("GB grafik geçmişi temizlensin mi?")){ gbHistorySave(gbHistoryLoad().filter(x=>x.server!==gbGraphServer())); drawGbTrend(); } });
+window.addEventListener("resize",()=>setTimeout(drawGbTrend,100));
 el("gbKaynakEkle").addEventListener("click",()=>{
   const site = el("gbSiteAdi").value.trim();
   const url = el("gbApiUrl").value.trim();
@@ -1402,6 +1526,7 @@ onSnapshot(query(gbRef), snap=>{
 ayarlariYukle();
 preview();
 renderGb();
+drawGbTrend();
 resetGbTimer();
 </script>
 
