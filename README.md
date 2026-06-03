@@ -28,3 +28,13 @@ Firestore:
   - `site`: string
   - `price`: number
   - İsteğe bağlı `server`: string (`zero`)
+
+
+## v5.3 Admin GB Fiyat Güncelleme
+
+Admin sayfası: `/admin.html`
+
+Varsayılan PIN: `1453`
+
+Netlify ortam değişkeni ile değiştirmek istersen:
+`KP_ADMIN_PIN`

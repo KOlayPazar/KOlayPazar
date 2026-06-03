@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>KOlayPazar Admin - GB Fiyat Güncelle</title>
+  <style>
+    body{margin:0;background:#08090d;color:#f8e8b0;font-family:Arial,Helvetica,sans-serif}
+    .wrap{max-width:560px;margin:28px auto;padding:18px}
+    .card{border:1px solid #8a6422;border-radius:16px;background:#111217;padding:18px;box-shadow:0 0 22px rgba(255,193,7,.12)}
+    h1{font-size:24px;margin:0 0 8px;color:#ffd866}
+    p{color:#d6c8a0;line-height:1.45}
+    label{display:block;margin-top:14px;font-weight:700;color:#ffe49a}
+    input,select{width:100%;box-sizing:border-box;margin-top:6px;padding:13px;border-radius:10px;border:1px solid #8a6422;background:#050609;color:#fff;font-size:16px}
+    button{width:100%;margin-top:18px;padding:14px;border:0;border-radius:12px;background:linear-gradient(#ffd54a,#b87900);color:#1b1200;font-size:18px;font-weight:900}
+    .result{margin-top:14px;padding:12px;border-radius:10px;background:#050609;color:#fff;white-space:pre-wrap}
+    .back{display:inline-block;margin-top:16px;color:#ffd866;text-decoration:none}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <h1>KOlayPazar Admin</h1>
+      <p>ByNoGame/EnUcuzGB Cloudflare engellediği için en güvenli ücretsiz yöntem: fiyatı buradan güncelle, KOlayPazar canlı paneli Firestore’dan anında okusun.</p>
+
+      <label>Admin PIN</label>
+      <input id="pin" type="password" placeholder="Varsayılan: 1453">
+
+      <label>Site</label>
+      <input id="site" value="ByNoGame">
+
+      <label>Sunucu</label>
+      <select id="server">
+        <option value="zero">Zero</option>
+        <option value="agartha">Agartha</option>
+        <option value="felis">Felis</option>
+        <option value="destan">Destan</option>
+      </select>
+
+      <label>GB Fiyatı (TL)</label>
+      <input id="price" type="number" inputmode="decimal" placeholder="Örn: 1250">
+
+      <button onclick="savePrice()">Fiyatı Güncelle</button>
+
+      <div id="result" class="result">Hazır.</div>
+      <a class="back" href="/">← Siteye dön</a>
+    </div>
+  </div>
+
+<script>
+async function savePrice(){
+  const result = document.getElementById("result");
+  result.textContent = "Güncelleniyor...";
+
+  try{
+    const res = await fetch("/.netlify/functions/gb-fiyatlari", {
+      method:"POST",
+      headers:{ "content-type":"application/json" },
+      body: JSON.stringify({
+        pin: document.getElementById("pin").value,
+        site: document.getElementById("site").value,
+        server: document.getElementById("server").value,
+        price: document.getElementById("price").value
+      })
+    });
+
+    const data = await res.json();
+    result.textContent = JSON.stringify(data, null, 2);
+  }catch(err){
+    result.textContent = "Hata: " + err.message;
+  }
+}
+</script>
+</body>
+</html>
