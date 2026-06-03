@@ -51,7 +51,20 @@ function docToItem(doc) {
 
 exports.handler = async function (event) {
   const wantedServer = normalizeServer(event.queryStringParameters?.server || "zero");
-  
+    const testResponse = await fetch("https://www.enucuzgb.com/", {
+    headers: {
+      "user-agent": "Mozilla/5.0",
+      "accept": "text/html"
+    }
+  });
+
+  const html = await testResponse.text();
+
+  return {
+    statusCode: 200,
+    headers: { "content-type": "text/plain; charset=utf-8" },
+    body: "ENUCUZGB TEST\n\n" + html.slice(0, 3000)
+  };
   const url =
     `https://firestore.googleapis.com/v1/projects/${PROJECT_ID}` +
     `/databases/(default)/documents/${COLLECTION}?key=${API_KEY}`;
