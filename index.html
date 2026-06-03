@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-<title>KOlayPazar v4.5 - Kayıt Listeleme Fix</title>
+<title>KOlayPazar v5.2 NETLIFY + FIREBASE CANLI GB</title>
 <style>
 :root{
   --bg:#030201;--panel:#0b0805;--panel2:#120d07;--line:#6a4314;--line2:#b97c27;
@@ -526,6 +526,47 @@ body{
   min-height:72px !important;
 }
 
+
+/* v5.2 Netlify + Firebase canlı GB */
+.kp-gb-live-box{
+  margin-top:12px;
+  padding:12px;
+  border:1px solid rgba(255,193,7,.45);
+  border-radius:12px;
+  background:rgba(12,12,16,.72);
+}
+.kp-gb-live-box h3{
+  margin:0 0 8px 0;
+  color:#ffe680;
+  font-size:15px;
+}
+.kp-gb-live-status{
+  font-size:12px;
+  color:#ddd;
+  margin-bottom:8px;
+  line-height:1.35;
+}
+.kp-gb-live-row{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:8px;
+  padding:7px 8px;
+  border:1px solid rgba(255,193,7,.28);
+  border-radius:9px;
+  background:rgba(255,255,255,.03);
+  margin-top:6px;
+}
+.kp-gb-live-site{
+  font-weight:700;
+  color:#fff;
+}
+.kp-gb-live-price{
+  font-weight:900;
+  color:#50ff54;
+  white-space:nowrap;
+}
+
 </style>
 </head>
 <body>
@@ -549,6 +590,12 @@ body{
       </div>
       <div id="gbSonDurum" class="type-note">Otomatik güncelleme hazırlanıyor...</div>
       <div class="gb-list" id="gbList"></div>
+<div id="kpGbLiveBox" class="kp-gb-live-box">
+  <h3>💸 Canlı GB Fiyatları</h3>
+  <div id="kpGbLiveStatus" class="kp-gb-live-status">Netlify + Firebase canlı fiyat bekleniyor...</div>
+  <div id="kpGbLiveList"></div>
+</div>
+
     </div>
 
     <div class="stock-center">
@@ -686,7 +733,7 @@ body{
 
 <footer class="footer">
   <span>🛡️ Moradon’da kazanç seninle olsun!</span>
-  <span>KOlayPazar v4.5 KAYIT LİSTELEME FIX</span>
+  <span>KOlayPazar v5.2 NETLIFY + FIREBASE CANLI GB</span>
 </footer>
 </main>
 </div>
@@ -1187,5 +1234,46 @@ preview();
 renderGb();
 resetGbTimer();
 </script>
+
+<script>
+(function(){
+  async function kpLoadLiveGb(){
+    var statusEl = document.getElementById("kpGbLiveStatus");
+    var listEl = document.getElementById("kpGbLiveList");
+    if(!statusEl || !listEl) return;
+
+    try{
+      statusEl.textContent = "Canlı fiyatlar yükleniyor...";
+      var res = await fetch("/.netlify/functions/gb-fiyatlari?server=zero&ts=" + Date.now(), { cache:"no-store" });
+      var data = await res.json();
+
+      if(!data.ok || !Array.isArray(data.items) || data.items.length === 0){
+        statusEl.textContent = data.message || "Canlı fiyat bulunamadı. Firebase gbFiyatlari koleksiyonunu kontrol et.";
+        listEl.innerHTML = "";
+        return;
+      }
+
+      statusEl.textContent = "Kaynak: " + (data.source || "Firebase") + " • Güncel: " + new Date(data.updatedAt).toLocaleTimeString("tr-TR");
+      listEl.innerHTML = data.items.map(function(x, i){
+        var price = Number(x.price || 0).toLocaleString("tr-TR", { minimumFractionDigits:2, maximumFractionDigits:2 });
+        return '<div class="kp-gb-live-row">' +
+          '<div><span style="color:#ffd54a;font-weight:900;">' + (i+1) + '.</span> ' +
+          '<span class="kp-gb-live-site">' + (x.site || "-") + '</span><br>' +
+          '<small>Sunucu: Zero • Netlify canlı</small></div>' +
+          '<div class="kp-gb-live-price">' + price + ' TL</div>' +
+        '</div>';
+      }).join("");
+    }catch(err){
+      statusEl.textContent = "Canlı GB okuma hatası: " + err.message;
+      listEl.innerHTML = "";
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", kpLoadLiveGb);
+  setInterval(kpLoadLiveGb, 60000);
+  window.kpLoadLiveGb = kpLoadLiveGb;
+})();
+</script>
+
 </body>
 </html>
