@@ -51,7 +51,19 @@ function docToItem(doc) {
 
 exports.handler = async function (event) {
   const wantedServer = normalizeServer(event.queryStringParameters?.server || "zero");
+  const testResponse = await fetch("https://www.bynogame.com/tr/oyunlar/knight-online/gold-bar/zero", {
+    headers: {
+      "user-agent": "Mozilla/5.0"
+    }
+  });
 
+  const html = await testResponse.text();
+
+  return {
+    statusCode: 200,
+    headers: { "content-type": "text/plain; charset=utf-8" },
+    body: html.slice(0, 3000)
+  };
   const url =
     `https://firestore.googleapis.com/v1/projects/${PROJECT_ID}` +
     `/databases/(default)/documents/${COLLECTION}?key=${API_KEY}`;
