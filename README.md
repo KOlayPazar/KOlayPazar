@@ -1,3 +1,2 @@
 # KOlayPazar
-
-Verileri koruyan GitHub Pages uyumlu sürüm.
+GitHub Pages uyumlu tek dosya site.
