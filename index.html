@@ -56,7 +56,13 @@
 @keyframes fogDrift{from{filter:blur(0px)}to{filter:blur(2px)}}
 .section-title{background:linear-gradient(90deg,rgba(8,22,45,.96),rgba(13,38,75,.94) 55%,rgba(20,13,28,.92))!important;border:1px solid rgba(188,145,70,.48)!important;border-top:0!important;box-shadow:inset 0 1px 0 rgba(255,231,166,.12),0 12px 34px rgba(0,0,0,.28),0 0 22px rgba(37,96,187,.16)!important;position:relative;overflow:hidden}
 .section-title:after{content:"";position:absolute;left:20px;right:20px;bottom:0;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:.5}.section-title strong{color:var(--gold2)!important;text-shadow:0 0 14px rgba(255,219,114,.22)!important}.section-title small{color:#9fb3d2!important}.side-foot:before{display:none!important;content:none!important}.side-foot{padding-top:14px;border-top:1px solid rgba(99,145,209,.25)}.side-foot b{color:#dcecff}.side-foot span{color:#7f91ab}.navbtn.active{background:linear-gradient(90deg,rgba(19,55,105,.98),rgba(6,17,36,.92))!important}.profit-card{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.profit-box{padding:14px;border:1px solid rgba(82,139,224,.35);border-radius:12px;background:rgba(4,15,34,.62)}.profit-box b{font-size:22px}.loss{color:#ff6172!important}.profit{color:#55f273!important}@media(max-width:850px){.profit-card{grid-template-columns:1fr}.section-title strong{font-size:25px!important}}
-</style></head><body><div class="ko-bg"></div><div class="stars"></div><div class="fog"></div><div id="toast"></div><div class="app"><aside class="sidebar"><div class="brand"><span class="logo">⚔</span>KOlayPazar</div>
+
+/* === v7.0 Final Görsel ve düzen güncellemeleri === */
+.app{grid-template-columns:220px minmax(0,1fr)!important;gap:18px!important;max-width:1500px!important}
+.sidebar{min-height:calc(100vh - 28px)!important;max-height:calc(100vh - 28px)!important;padding:14px 12px!important;overflow-y:auto!important;scrollbar-width:thin}
+.brand{font-size:23px!important;margin:8px 4px 20px!important}
+.logo{width:30px!important;height:30px!important}.navbtn{height:44px!important;margin:5px 0!important;padding:0 12px!important;font-size:14px!important;border-radius:10px!important}.navbtn .ico{font-size:17px!important;width:21px!important}.side-foot{padding-top:10px!important;margin-top:10px!important;border-top:1px solid rgba(119,164,255,.16)!important}.side-foot:before{display:none!important}.hero{height:300px!important;border:2px solid rgba(255,214,112,.75)!important;border-radius:6px 6px 0 0!important;box-shadow:0 0 0 1px rgba(255,255,255,.08) inset,0 0 30px rgba(255,189,63,.28),0 0 70px rgba(37,122,255,.20),0 22px 65px rgba(0,0,0,.55)!important;position:relative;overflow:hidden}.hero:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(255,218,108,.18),transparent 16%,transparent 84%,rgba(255,218,108,.16)),radial-gradient(circle at 50% 12%,rgba(255,255,214,.20),transparent 32%);mix-blend-mode:screen;animation:bannerPulse 4.5s ease-in-out infinite;pointer-events:none}@keyframes bannerPulse{0%,100%{opacity:.45}50%{opacity:.9}}.section-title{background:linear-gradient(90deg,rgba(15,34,64,.96),rgba(8,23,48,.96) 50%,rgba(29,21,12,.96))!important;border:1px solid rgba(255,214,112,.55)!important;border-top:0!important;box-shadow:0 12px 28px rgba(0,0,0,.35),inset 0 0 20px rgba(255,208,91,.08)!important}.section-title strong{color:#ffe8a3!important;text-shadow:0 0 13px rgba(255,216,111,.32)!important}.section-title small{color:#cbdaf1!important}.ko-bg{background:radial-gradient(circle at 50% 0%,rgba(28,86,165,.56),transparent 34%),radial-gradient(circle at 80% 18%,rgba(26,56,116,.35),transparent 35%),linear-gradient(180deg,#071832 0%,#020711 62%,#01030a 100%)!important}.ko-bg:after{content:"";position:absolute;inset:auto 0 0 0;height:43vh;background:linear-gradient(180deg,transparent 0%,rgba(1,6,15,.30) 42%,rgba(0,0,0,.78) 100%),linear-gradient(135deg,transparent 0 28%,rgba(4,13,28,.78) 28% 31%,transparent 31% 100%),linear-gradient(65deg,transparent 0 56%,rgba(5,19,42,.75) 56% 59%,transparent 59% 100%),radial-gradient(ellipse at 12% 100%,rgba(11,34,65,.85) 0 15%,transparent 16%),radial-gradient(ellipse at 88% 100%,rgba(10,31,62,.82) 0 16%,transparent 17%);opacity:.72;filter:drop-shadow(0 0 28px rgba(37,111,255,.15));pointer-events:none}.fog{position:fixed;inset:0;z-index:-2;pointer-events:none;overflow:hidden}.fog:before,.fog:after{content:"";position:absolute;inset:-20%;background:radial-gradient(ellipse at 20% 70%,rgba(130,170,255,.11),transparent 34%),radial-gradient(ellipse at 70% 65%,rgba(95,132,207,.09),transparent 38%),radial-gradient(ellipse at 50% 95%,rgba(255,255,255,.07),transparent 28%);filter:blur(24px);animation:fogMove 28s linear infinite}.fog:after{animation-duration:42s;animation-direction:reverse;opacity:.75}@keyframes fogMove{from{transform:translateX(-5%) translateY(1%)}to{transform:translateX(7%) translateY(-2%)}}.panel{backdrop-filter:blur(6px)}.profit-box{border:1px solid rgba(75,139,230,.32);background:rgba(8,22,46,.72);border-radius:14px;padding:15px}@media(max-width:980px){.sidebar{max-height:none!important}.hero{height:170px!important}}
+</style></head><body><div class="ko-bg"></div><div class="fog"></div><div class="stars"></div><div class="fog"></div><div id="toast"></div><div class="app"><aside class="sidebar"><div class="brand"><span class="logo">⚔</span>KOlayPazar</div>
 <button class="navbtn active" data-page="home"><span class="ico">⌂</span><span>Ana Sayfa</span></button>
 <button class="navbtn" data-page="market"><span class="ico">▤</span><span>Pazar Kayıtları</span></button>
 <button class="navbtn" data-page="stock"><span class="ico">▣</span><span>Stok Merkezi</span></button>
@@ -72,12 +78,12 @@
 <script>
 const KEY='KOlayPazar_data_v1';
 const LEGACY_KEYS=['kolaypazarData','KOlayPazar_v59','KOlayPazar_v60','kp_records','records','marketRecords'];
-let data={records:[],settings:{theme:'knight',taxRate:3},version:'6.8'};
+let data={records:[],settings:{theme:'knight',taxRate:3},version:'7.0'};
 const byId=id=>document.getElementById(id);
 const fmt=n=>(Number(n)||0).toLocaleString('tr-TR')+' M';
 function toast(t){let el=byId('toast'); if(!el) return; el.textContent=t; el.style.display='block'; clearTimeout(window._to); window._to=setTimeout(()=>el.style.display='none',2300)}
-function load(){try{let raw=localStorage.getItem(KEY); if(raw)data=JSON.parse(raw); else{for(const k of LEGACY_KEYS){let r=localStorage.getItem(k); if(!r)continue; try{let p=JSON.parse(r); if(Array.isArray(p))data.records=p; else if(Array.isArray(p.records))data.records=p.records; if(data.records.length)break}catch(e){}}} if(!data.settings)data.settings={}; if(data.settings.taxRate===undefined)data.settings.taxRate=3; if(!Array.isArray(data.records))data.records=[]; normalizeOldRecords(); save()}catch(e){data={records:[],settings:{theme:'knight',taxRate:3},version:'6.8'}; save()}}
-function save(){data.version='6.7'; localStorage.setItem(KEY,JSON.stringify(data))}
+function load(){try{let raw=localStorage.getItem(KEY); if(raw)data=JSON.parse(raw); else{for(const k of LEGACY_KEYS){let r=localStorage.getItem(k); if(!r)continue; try{let p=JSON.parse(r); if(Array.isArray(p))data.records=p; else if(Array.isArray(p.records))data.records=p.records; if(data.records.length)break}catch(e){}}} if(!data.settings)data.settings={}; if(data.settings.taxRate===undefined)data.settings.taxRate=3; if(!Array.isArray(data.records))data.records=[]; normalizeOldRecords(); save()}catch(e){data={records:[],settings:{theme:'knight',taxRate:3},version:'7.0'}; save()}}
+function save(){data.version='7.0'; localStorage.setItem(KEY,JSON.stringify(data))}
 function normalizeOldRecords(){data.records.forEach(r=>{if(!r.id)r.id=String(Date.now()+Math.random()); if(!r.date)r.date=new Date().toISOString(); if(r.type==='Al')r.type='Alış'; if(r.status==='Satildi')r.status='Satıldı'; r.qty=Number(r.qty)||1; r.unit=Number(r.unit)||0; r.total=Number(r.total)||r.qty*r.unit; if(!r.rarity)r.rarity='Normal';})}
 function recTotal(r){return Number(r.total)||((Number(r.qty)||0)*(Number(r.unit)||0))}
 function normalizeName(s){return(s||'').trim().toLowerCase()}
@@ -110,6 +116,79 @@ function editRec(id){let r=data.records.find(x=>x.id===id);if(!r)return;showPage
 function delRec(id){if(!confirm('Bu kaydı silmek istiyor musun?'))return;data.records=data.records.filter(r=>r.id!==id&&r.sourceId!==id);data.settings.favorites=favs().filter(x=>x!==id);render();toast('Kayıt silindi')}
 function copyRec(id){let r=data.records.find(x=>x.id===id);if(!r)return;navigator.clipboard?.writeText(`${r.item} | ${r.type} | ${r.qty} adet | ${fmt(r.unit)} | ${r.status} | Net: ${fmt(profitFor(r))}`);toast('Kayıt kopyalandı')}
 function showPage(p){const titles={home:['🏠','Ana Sayfa','Genel durum, son kayıtlar ve canlı GB panosu'],market:['📝','Pazar Kayıtları','Alış, drop ve satış kayıtlarını yönet'],history:['📜','Fiyat Geçmişi','İtem bazlı fiyat, vergi ve kâr analizi'],trade:['▧','Alış & Satış Geçmişi','Alış ve satış kayıtlarını ayrı ayrı gör'],profit:['⌁','Kâr Analizi','Net kâr, zarar ve vergi özetini gör'],favorites:['♡','Favoriler','Önemli itemleri hızlı takip et'],stock:['📦','Stok Merkezi','Bekleyen stokları sat, parçalı satış yap'],settings:['⚙️','Ayarlar','Vergi, yedekle, geri yükle ve veri yönetimi']};document.querySelectorAll('.page').forEach(x=>x.classList.toggle('active',x.id===p));document.querySelectorAll('.navbtn').forEach(x=>x.classList.remove('active'));let activeBtn=document.querySelector(`.navbtn[data-page="${p}"]`);if(activeBtn)activeBtn.classList.add('active');if(titles[p]){byId('pageIcon').textContent=titles[p][0];byId('pageTitle').textContent=titles[p][1];byId('pageSub').textContent=titles[p][2]}window.scrollTo({top:0,behavior:'smooth'})}
+
+// === v7.0 Final: gerçek GB denemesi, stok/parçalı satış ve hesap düzeltmeleri ===
+const KP_LIVE_GB_SOURCES=[
+  'https://www.enucuzgb.com/',
+  'https://itemara.com/knight-online/gb'
+];
+let KP_GB_CACHE=null, KP_GB_LOADING=false, KP_GB_TRIED=false;
+function parsePriceText(t){let m=String(t||'').match(/(\d{2,4}(?:[.,]\d{1,2})?)/);return m?m[1].replace('.',','):null}
+function extractGBRows(html){
+  const servers=['Pandora','Destan','Zero','Agartha','Felis','Dryads','Minark','Oreads'];
+  const clean=String(html||'').replace(/<script[\s\S]*?<\/script>/gi,' ').replace(/<style[\s\S]*?<\/style>/gi,' ').replace(/<[^>]+>/g,' ').replace(/\s+/g,' ');
+  let rows=[];
+  for(const srv of servers){
+    let idx=clean.toLowerCase().indexOf(srv.toLowerCase());
+    if(idx<0) continue;
+    let part=clean.slice(Math.max(0,idx-80),idx+320);
+    let nums=[...part.matchAll(/(\d{2,4}(?:[.,]\d{1,2})?)\s*(?:TL|₺)?/gi)].map(x=>x[1].replace('.',','));
+    nums=nums.filter(n=>{let v=parseFloat(n.replace(',','.'));return v>=100&&v<=10000});
+    if(nums.length){rows.push({server:srv,buy:nums[0],sell:nums[1]||nums[0],change:'Canlı'});}
+  }
+  const unique=[]; const seen=new Set();
+  for(const r of rows){ if(!seen.has(r.server)){unique.push(r); seen.add(r.server)} }
+  return unique.slice(0,6);
+}
+async function fetchLiveGB(){
+  for(const url of KP_LIVE_GB_SOURCES){
+    try{
+      const proxy='https://api.allorigins.win/raw?url='+encodeURIComponent(url);
+      const res=await fetch(proxy,{cache:'no-store'});
+      if(!res.ok) continue;
+      const html=await res.text();
+      const rows=extractGBRows(html);
+      if(rows.length) return {rows,source:new URL(url).hostname,time:new Date().toLocaleTimeString('tr-TR')};
+    }catch(e){}
+  }
+  return null;
+}
+function renderGB(){
+  const list=byId('gbList'), chart=byId('miniChart'); if(!list||!chart)return;
+  if(KP_GB_CACHE){
+    list.innerHTML=KP_GB_CACHE.rows.map(x=>`<div class="gbrow"><b>🛡️ ${esc(x.server)}</b><span>Alış: ${esc(x.buy)} TL</span><span class="green">${esc(x.change)}</span></div>`).join('')+`<div class="muted" style="padding:10px 12px">Kaynak: ${esc(KP_GB_CACHE.source)} · ${KP_GB_CACHE.time}</div>`;
+    chart.innerHTML=KP_GB_CACHE.rows.map((x,i)=>`<div class="bar" style="height:${35+(i*11)%55}%"></div>`).join('');
+    return;
+  }
+  list.innerHTML='<p class="muted">Canlı GB verileri yükleniyor...</p>';
+  chart.innerHTML=[35,45,38,60,52,68].map(h=>`<div class="bar" style="height:${h}%"></div>`).join('');
+  if(KP_GB_LOADING||KP_GB_TRIED)return;
+  KP_GB_LOADING=true; KP_GB_TRIED=true;
+  fetchLiveGB().then(data=>{KP_GB_LOADING=false; if(data){KP_GB_CACHE=data; renderGB()} else {list.innerHTML='<p class="muted">Canlı veri alınamadı. Kaynaklar CORS/koruma nedeniyle yanıt vermedi. Yenilemek için sayfayı tekrar aç.</p>';}});
+}
+function remainingStockRecords(){return data.records.filter(r=>r.status!=='Satıldı'&&r.type!=='Satış'&&!isReplacedBySale(r)&&(Number(r.qty)||0)>0)}
+function renderStock(){let stock=remainingStockRecords();byId('stockList').innerHTML=stock.map(r=>`<div class="listrow"><div><b>${esc(r.item)}</b><br><span class="muted">${r.qty||1} adet · Alış/Değer ${fmt(r.unit)} · ${esc(r.status)}</span></div><div class="actions"><button class="btn gold small" onclick="sellStock('${r.id}')">Satıldı</button><button class="btn small" onclick="editRec('${r.id}')">Düzenle</button></div></div>`).join('')||'<p class="muted">Stokta kayıt yok.</p>';byId('stockValue').textContent=fmt(stock.reduce((a,r)=>a+recTotal(r),0));byId('stockCount').textContent=stock.reduce((a,r)=>a+(Number(r.qty)||0),0);let pending=stock.reduce((a,r)=>a+(r.type==='Drop'?recTotal(r):Math.max(0,(Number(r.unit)||0)-avgCostFor(r.item))*(Number(r.qty)||0)),0);byId('pendingProfit').textContent=fmt(pending)}
+function sellStock(id){
+  let r=data.records.find(x=>x.id===id); if(!r)return;
+  let max=Number(r.qty)||1;
+  let q=prompt(`Kaç adet satıldı? (Stok: ${max})`,String(max)); if(q===null)return;
+  q=parseInt(String(q).replace(',','.'),10); if(!q||q<1)return toast('Geçerli adet gir'); if(q>max)q=max;
+  let price=prompt('Satış adet fiyatı (M)',String(Number(r.unit)||0)); if(price===null)return;
+  price=Number(String(price).replace(',','.'))||0; if(price<=0)return toast('Satış fiyatı gerekli');
+  let now=new Date().toISOString();
+  let originalUnit=Number(r.unit)||0;
+  let costUnit=r.type==='Drop'?0:(Number.isFinite(Number(r.costUnit))?Number(r.costUnit):originalUnit);
+  if(q>=max){
+    r.type='Satış'; r.qty=max; r.unit=price; r.total=max*price; r.status='Satıldı'; r.date=now; r.soldAt=now; r.costUnit=costUnit;
+  }else{
+    r.qty=max-q; r.unit=originalUnit; r.total=r.qty*originalUnit; r.status='Beklemede';
+    data.records.push({...r,id:String(Date.now()+Math.random()),type:'Satış',qty:q,unit:price,total:q*price,status:'Satıldı',date:now,soldAt:now,sourceId:r.id,costUnit});
+  }
+  render(); toast(q>=max?'Tamamı satıldı':'Satış işlendi, kalan stok beklemede');
+}
+function isSaleRecord(r){return !isReplacedBySale(r)&&(r.type==='Satış'||(r.type==='Drop'&&r.status==='Satıldı'))}
+function profitFor(r){ if(!isSaleRecord(r))return 0; const cost=(Number(r.costUnit)||0)*(Number(r.qty)||1); return Math.round(netSale(r)-cost) }
+
 document.querySelectorAll('[data-page]').forEach(b=>b.onclick=()=>showPage(b.dataset.page));
 ['qty','unit'].forEach(id=>byId(id).addEventListener('input',()=>{let q=+byId('qty').value||0,u=+byId('unit').value||0;byId('total').value=q&&u?q*u:''}));
 byId('recordForm').onsubmit=e=>{e.preventDefault();let id=byId('editId').value||String(Date.now());let i=data.records.findIndex(x=>x.id===id);let old=i>=0?data.records[i]:{};let r={...old,id,type:byId('type').value,item:byId('item').value.trim(),qty:+byId('qty').value||1,unit:+byId('unit').value||0,total:+byId('total').value||0,status:byId('status').value,rarity:byId('rarity').value,date:old.date||new Date().toISOString()}; if(!r.item)return toast('İtem adı gerekli'); if(r.type==='Drop')r.costUnit=0; if(r.type==='Satış'&&r.status!=='Satıldı')r.status='Satıldı'; if(r.type==='Satış'&&old.costUnit===undefined){let avg=avgCostFor(r.item); if(avg)r.costUnit=avg} if(i>=0){r.date=new Date().toISOString();data.records[i]=r}else data.records.push(r);e.target.reset();byId('qty').value=1;byId('editId').value='';render();toast(i>=0?'Kayıt güncellendi':'Kayıt eklendi')};
