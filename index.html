@@ -639,4 +639,78 @@ load(); if(byId('taxRate')){byId('taxRate').value=taxRate(); byId('taxRate').add
   window.render=function(){ if(typeof prevRender==='function') prevRender(); boot(); };
 })();
 </script>
+
+
+<!-- === v8.7 FINAL: Son eklenen kayıtları gerçekten kompakt açılır kart yap === -->
+<style>
+#recentRecords.records,
+#recentRecords.compact-list{
+  display:grid!important;
+  grid-template-columns:repeat(auto-fill,minmax(145px,1fr))!important;
+  gap:7px!important;
+  align-items:start!important;
+}
+#recentRecords .card:not(.kp-compact-card){display:none!important;}
+#recentRecords .kp-compact-card{
+  position:relative!important;
+  min-height:48px!important;
+  padding:7px 8px!important;
+  display:grid!important;
+  grid-template-columns:26px minmax(0,1fr) 14px!important;
+  gap:6px!important;
+  cursor:pointer!important;
+  overflow:hidden!important;
+  border-radius:8px!important;
+  border:1.5px solid rgba(255,210,90,.85)!important;
+  background:linear-gradient(135deg,rgba(5,10,20,.98),rgba(15,22,36,.94))!important;
+  box-shadow:0 0 8px rgba(255,195,45,.28), inset 0 0 10px rgba(255,216,94,.04)!important;
+  transition:transform .18s ease, box-shadow .18s ease, border-color .18s ease, max-height .18s ease!important;
+}
+#recentRecords .kp-compact-card:hover{transform:translateY(-1px)!important;border-color:#ffe28a!important;box-shadow:0 0 16px rgba(255,201,70,.5)!important}
+#recentRecords .kp-compact-card:after{content:'AÇ';position:absolute;right:6px;top:4px;font-size:8px;font-weight:900;color:#ffd86b;opacity:.75;letter-spacing:.4px}
+#recentRecords .kp-compact-card.open:after{content:'KAPAT'}
+#recentRecords .kp-compact-card .item-icon{width:25px!important;height:25px!important;min-width:25px!important;border-radius:6px!important;font-size:14px!important;display:grid!important;place-items:center!important;background:rgba(255,205,70,.08)!important;border:1px solid rgba(255,215,100,.35)!important}
+#recentRecords .kp-compact-card h3{font-size:13px!important;line-height:1.05!important;margin:0!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;text-shadow:0 0 8px rgba(255,220,120,.35)!important}
+#recentRecords .kp-compact-card .pill{font-size:8px!important;padding:1px 4px!important;margin-left:2px!important;vertical-align:middle!important}
+#recentRecords .kp-compact-card .quick{margin-top:3px!important;font-size:10px!important;line-height:1.1!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;color:#bdc9df!important}
+#recentRecords .kp-compact-card .kp-chevron{font-size:16px!important;line-height:25px!important;color:#ffd66b!important;transition:transform .18s ease!important}
+#recentRecords .kp-compact-card.open .kp-chevron{transform:rotate(90deg)!important}
+#recentRecords .kp-compact-card .kp-detail{display:none!important;grid-column:1/-1!important;margin-top:7px!important;padding-top:7px!important;border-top:1px solid rgba(255,211,100,.26)!important}
+#recentRecords .kp-compact-card.open .kp-detail{display:block!important}
+#recentRecords .kp-compact-card .kp-detail .meta{font-size:10.5px!important;line-height:1.3!important}
+#recentRecords .kp-compact-card .actions{margin-top:7px!important;gap:4px!important;display:flex!important;flex-wrap:wrap!important}
+#recentRecords .kp-compact-card .btn.small{padding:4px 6px!important;font-size:10px!important;min-height:auto!important;border-radius:7px!important}
+@media(max-width:900px){#recentRecords.records,#recentRecords.compact-list{grid-template-columns:repeat(auto-fill,minmax(130px,1fr))!important}}
+</style>
+<script>
+(function(){
+  function makeCompactCard(r){
+    const p=profitFor(r), tax=taxFor(r), isStock=r.status!=='Satıldı'&&r.type!=='Satış', pc=p<0?'loss':'profit';
+    const icon=(typeof koIcon==='function')?koIcon(r):(r.type==='Satış'?'⛃':'⚜');
+    const saleInfo=isSaleRecord(r)?`<br><span class="taxline">Vergi: -${fmt(tax)}</span><br><span class="${pc}">${p<0?'Zarar':'Net Kâr'}: ${fmt(p)}</span>`:'';
+    const actions=`<div class="actions">${isStock?`<button class="btn gold small" onclick="event.stopPropagation();sellStock('${r.id}')">Satıldı</button>`:''}<button class="btn ghost small ${isFav(r)?'fav-on':''}" onclick="event.stopPropagation();toggleFav('${r.id}')">${isFav(r)?'★':'☆'}</button><button class="btn small" onclick="event.stopPropagation();editRec('${r.id}')">Düzenle</button><button class="btn ghost small" onclick="event.stopPropagation();copyRec('${r.id}')">Kopyala</button><button class="btn red small" onclick="event.stopPropagation();delRec('${r.id}')">Sil</button></div>`;
+    return `<div class="kp-compact-card ${r.status==='Satıldı'?'sold':''}" onclick="this.classList.toggle('open')"><div class="item-icon"><span class="real-icon">${icon}</span></div><div><h3>${esc(r.item)} <span class="pill">${esc(r.rarity||'Normal')}</span></h3><div class="meta quick">${fmt(recTotal(r))} · Stok: ${r.status==='Satıldı'?0:(r.qty||1)} · ${esc(r.status||'Beklemede')}</div></div><div class="kp-chevron">›</div><div class="kp-detail"><div class="meta">${new Date(r.date).toLocaleString('tr-TR')} · ${esc(r.status||'Beklemede')}<br>Adet: ${r.qty||1} · Adet Fiyatı: ${fmt(r.unit)} · Toplam: ${fmt(recTotal(r))}${saleInfo}</div>${actions}</div></div>`;
+  }
+  window.renderRecords = renderRecords = function(){
+    let sorted=[...data.records].filter(r=>!isReplacedBySale(r)).sort((a,b)=>new Date(b.date)-new Date(a.date));
+    const recent=byId('recentRecords');
+    if(recent){recent.className='records compact-list';recent.innerHTML=sorted.slice(0,12).map(makeCompactCard).join('')||'<p class="muted">Henüz kayıt yok.</p>';}
+    if(byId('allRecords')) byId('allRecords').innerHTML=sorted.map(r=>card(r,false)).join('')||'<p class="muted">Henüz kayıt yok.</p>';
+  };
+  const finalRender=function(){
+    save();
+    const rec=data.records; const sales=rec.filter(isSaleRecord); const stock=(typeof remainingStockRecords==='function')?remainingStockRecords():rec.filter(r=>r.status!=='Satıldı'&&r.type!=='Satış'&&!isReplacedBySale(r));
+    const profit=sales.reduce((a,r)=>a+profitFor(r),0); const tax=sales.reduce((a,r)=>a+taxFor(r),0);
+    if(byId('sCount')) byId('sCount').textContent=rec.filter(r=>!isReplacedBySale(r)).length;
+    if(byId('sProfit')){byId('sProfit').textContent=fmt(profit); setMoneyClass(byId('sProfit'),profit);}
+    if(byId('sTax')) byId('sTax').textContent='-'+fmt(tax);
+    if(byId('sStock')) byId('sStock').textContent=stock.reduce((a,r)=>a+(Number(r.qty)||0),0);
+    if(byId('sAvg')) byId('sAvg').textContent=fmt(sales.length?sales.reduce((a,r)=>a+recTotal(r),0)/sales.length:0);
+    renderHot(); renderRecords(); renderGB(); renderHistory(); renderStock(); renderTrade(); renderProfit(); renderFavorites();
+  };
+  window.render = render = finalRender;
+  setTimeout(()=>{try{render()}catch(e){console.error(e)}},0);
+})();
+</script>
+
 </body></html>
