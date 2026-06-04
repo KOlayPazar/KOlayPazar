@@ -1,1 +1,3 @@
-KOlayPazar v5.9 Knight Düzenli - GitHub Pages uyumlu tek index.html
+# KOlayPazar
+
+Verileri koruyan GitHub Pages uyumlu sürüm.
