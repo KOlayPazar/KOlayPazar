@@ -471,7 +471,7 @@ load(); if(byId('taxRate')){byId('taxRate').value=taxRate(); byId('taxRate').add
     const saleInfo=isSaleRecord(r)?`<br><span class="taxline">Vergi: -${fmt(tax)}</span><br><span class="${pc}">${p<0?'Zarar':'Net Kâr'}: ${fmt(p)}</span>`:'';
     const actions=`<div class="actions">${isStock?`<button class="btn gold small" onclick="event.stopPropagation();sellStock('${r.id}')">Satıldı</button>`:''}<button class="btn ghost small ${isFav(r)?'fav-on':''}" onclick="event.stopPropagation();toggleFav('${r.id}')">♡</button><button class="btn small" onclick="event.stopPropagation();editRec('${r.id}')">Düzenle</button><button class="btn ghost small" onclick="event.stopPropagation();copyRec('${r.id}')">Kopyala</button><button class="btn red small" onclick="event.stopPropagation();delRec('${r.id}')">Sil</button></div>`;
     if(compact){
-      return `<div class="card kp-compact-card ${r.status==='Satıldı'?'sold':''}" onclick="this.classList.toggle('open')"><div class="item-icon"><span class="real-icon">${icon}</span></div><div><h3>${esc(r.item)} <span class="pill">${esc(r.rarity||'Normal')}</span></h3><div class="meta quick">${fmt(recTotal(r))} · Stok: ${r.status==='Satıldı'?0:(r.qty||1)} · ${esc(r.status||'Beklemede')}</div></div><div class="kp-chevron">›</div><div class="kp-detail"><div class="meta">${new Date(r.date).toLocaleString('tr-TR')} · ${esc(r.status||'Beklemede')}<br>Adet: ${r.qty||1} · Adet Fiyatı: ${fmt(r.unit)} · Toplam: ${fmt(recTotal(r))}${saleInfo}</div>${actions}</div></div>`;
+      return `<div class="card kp-compact-card ${r.status==='Satıldı'?'sold':''}" onclick="this.classList.toggle('open')"><div class="item-icon"><span class="real-icon">${icon}</span></div><div><h3>${esc(r.item)} <span class="pill">${esc(r.rarity||'Normal')}</span></h3><div class="meta quick">${fmt(recTotal(r))} · Stok: ${r.status==='Satıldı'?0:(r.qty||1)} · ${esc(r.status||'Beklemede')}</div></div><div class="kp-chevron">▼</div><div class="kp-detail"><div class="meta">${new Date(r.date).toLocaleString('tr-TR')} · ${esc(r.status||'Beklemede')}<br>Adet: ${r.qty||1} · Adet Fiyatı: ${fmt(r.unit)} · Toplam: ${fmt(recTotal(r))}${saleInfo}</div>${actions}</div></div>`;
     }
     return `<div class="card ${r.status==='Satıldı'?'sold':''}"><h3><span class="real-icon">${icon}</span> ${esc(r.item)} <span class="pill">${esc(r.rarity||'Normal')}</span></h3><div class="meta">${new Date(r.date).toLocaleString('tr-TR')} · ${esc(r.status||'Beklemede')}<br>Adet: ${r.qty||1} · Adet Fiyatı: ${fmt(r.unit)} · Toplam: ${fmt(recTotal(r))}${saleInfo}</div>${actions}</div>`;
   };
@@ -522,7 +522,7 @@ load(); if(byId('taxRate')){byId('taxRate').value=taxRate(); byId('taxRate').add
     const saleInfo=isSaleRecord(r)?`<br><span class="taxline">Vergi: -${fmt(tax)}</span><br><span class="${pc}">${p<0?'Zarar':'Net Kâr'}: ${fmt(p)}</span>`:'';
     const actions=`<div class="actions">${isStock?`<button class="btn gold small" onclick="event.stopPropagation();sellStock('${r.id}')">Satıldı</button>`:''}<button class="btn ghost small ${isFav(r)?'fav-on':''}" onclick="event.stopPropagation();toggleFav('${r.id}')">${isFav(r)?'★':'☆'}</button><button class="btn small" onclick="event.stopPropagation();editRec('${r.id}')">Düzenle</button><button class="btn ghost small" onclick="event.stopPropagation();copyRec('${r.id}')">Kopyala</button><button class="btn red small" onclick="event.stopPropagation();delRec('${r.id}')">Sil</button></div>`;
     if(compact){
-      return `<div class="card kp-compact-card ${r.status==='Satıldı'?'sold':''}" onclick="this.classList.toggle('open')"><div class="item-icon"><span class="real-icon">${icon}</span></div><div><h3>${esc(r.item)} <span class="pill">${esc(r.rarity||'Normal')}</span></h3><div class="meta quick">${fmt(recTotal(r))} · Stok: ${r.status==='Satıldı'?0:(r.qty||1)} · ${esc(r.status||'Beklemede')}</div></div><div class="kp-chevron">›</div><div class="kp-detail"><div class="meta">${new Date(r.date).toLocaleString('tr-TR')} · ${esc(r.status||'Beklemede')}<br>Adet: ${r.qty||1} · Adet Fiyatı: ${fmt(r.unit)} · Toplam: ${fmt(recTotal(r))}${saleInfo}</div>${actions}</div></div>`;
+      return `<div class="card kp-compact-card ${r.status==='Satıldı'?'sold':''}" onclick="this.classList.toggle('open')"><div class="item-icon"><span class="real-icon">${icon}</span></div><div><h3>${esc(r.item)} <span class="pill">${esc(r.rarity||'Normal')}</span></h3><div class="meta quick">${fmt(recTotal(r))} · Stok: ${r.status==='Satıldı'?0:(r.qty||1)} · ${esc(r.status||'Beklemede')}</div></div><div class="kp-chevron">▼</div><div class="kp-detail"><div class="meta">${new Date(r.date).toLocaleString('tr-TR')} · ${esc(r.status||'Beklemede')}<br>Adet: ${r.qty||1} · Adet Fiyatı: ${fmt(r.unit)} · Toplam: ${fmt(recTotal(r))}${saleInfo}</div>${actions}</div></div>`;
     }
     return `<div class="card ${r.status==='Satıldı'?'sold':''}"><h3><span class="real-icon">${icon}</span> ${esc(r.item)} <span class="pill">${esc(r.rarity||'Normal')}</span></h3><div class="meta">${new Date(r.date).toLocaleString('tr-TR')} · ${esc(r.status||'Beklemede')}<br>Adet: ${r.qty||1} · Adet Fiyatı: ${fmt(r.unit)} · Toplam: ${fmt(recTotal(r))}${saleInfo}</div>${actions}</div>`;
   };
@@ -689,7 +689,7 @@ load(); if(byId('taxRate')){byId('taxRate').value=taxRate(); byId('taxRate').add
     const icon=(typeof koIcon==='function')?koIcon(r):(r.type==='Satış'?'⛃':'⚜');
     const saleInfo=isSaleRecord(r)?`<br><span class="taxline">Vergi: -${fmt(tax)}</span><br><span class="${pc}">${p<0?'Zarar':'Net Kâr'}: ${fmt(p)}</span>`:'';
     const actions=`<div class="actions">${isStock?`<button class="btn gold small" onclick="event.stopPropagation();sellStock('${r.id}')">Satıldı</button>`:''}<button class="btn ghost small ${isFav(r)?'fav-on':''}" onclick="event.stopPropagation();toggleFav('${r.id}')">${isFav(r)?'★':'☆'}</button><button class="btn small" onclick="event.stopPropagation();editRec('${r.id}')">Düzenle</button><button class="btn ghost small" onclick="event.stopPropagation();copyRec('${r.id}')">Kopyala</button><button class="btn red small" onclick="event.stopPropagation();delRec('${r.id}')">Sil</button></div>`;
-    return `<div class="kp-compact-card ${r.status==='Satıldı'?'sold':''}" onclick="this.classList.toggle('open')"><div class="item-icon"><span class="real-icon">${icon}</span></div><div><h3>${esc(r.item)} <span class="pill">${esc(r.rarity||'Normal')}</span></h3><div class="meta quick">${fmt(recTotal(r))} · Stok: ${r.status==='Satıldı'?0:(r.qty||1)} · ${esc(r.status||'Beklemede')}</div></div><div class="kp-chevron">›</div><div class="kp-detail"><div class="meta">${new Date(r.date).toLocaleString('tr-TR')} · ${esc(r.status||'Beklemede')}<br>Adet: ${r.qty||1} · Adet Fiyatı: ${fmt(r.unit)} · Toplam: ${fmt(recTotal(r))}${saleInfo}</div>${actions}</div></div>`;
+    return `<div class="kp-compact-card ${r.status==='Satıldı'?'sold':''}" onclick="this.classList.toggle('open')"><div class="item-icon"><span class="real-icon">${icon}</span></div><div><h3>${esc(r.item)} <span class="pill">${esc(r.rarity||'Normal')}</span></h3><div class="meta quick">${fmt(recTotal(r))} · Stok: ${r.status==='Satıldı'?0:(r.qty||1)} · ${esc(r.status||'Beklemede')}</div></div><div class="kp-chevron">▼</div><div class="kp-detail"><div class="meta">${new Date(r.date).toLocaleString('tr-TR')} · ${esc(r.status||'Beklemede')}<br>Adet: ${r.qty||1} · Adet Fiyatı: ${fmt(r.unit)} · Toplam: ${fmt(recTotal(r))}${saleInfo}</div>${actions}</div></div>`;
   }
   window.renderRecords = renderRecords = function(){
     let sorted=[...data.records].filter(r=>!isReplacedBySale(r)).sort((a,b)=>new Date(b.date)-new Date(a.date));
@@ -713,4 +713,48 @@ load(); if(byId('taxRate')){byId('taxRate').value=taxRate(); byId('taxRate').add
 })();
 </script>
 
+
+<style id="v8-8-arrow-clean-final">
+/* v8.8: Kompakt kart ok sistemi - AÇ/KAPAT yazıları kaldırıldı */
+#recentRecords .kp-compact-card:before,
+#recentRecords .kp-compact-card:after{
+  content:none!important;
+  display:none!important;
+}
+#recentRecords .kp-compact-card{
+  cursor:pointer!important;
+}
+#recentRecords .kp-compact-card .kp-chevron{
+  margin-left:auto!important;
+  width:26px!important;
+  height:26px!important;
+  min-width:26px!important;
+  display:grid!important;
+  place-items:center!important;
+  font-size:16px!important;
+  line-height:1!important;
+  color:#ffd86b!important;
+  border:1px solid rgba(255,216,107,.55)!important;
+  border-radius:50%!important;
+  background:radial-gradient(circle at 50% 35%,rgba(255,226,138,.18),rgba(5,12,25,.65))!important;
+  box-shadow:0 0 10px rgba(255,205,75,.38), inset 0 0 8px rgba(255,210,80,.18)!important;
+  text-shadow:0 0 8px rgba(255,220,120,.8)!important;
+  transition:transform .2s ease, box-shadow .2s ease, color .2s ease!important;
+}
+#recentRecords .kp-compact-card:hover .kp-chevron{
+  color:#fff3b0!important;
+  box-shadow:0 0 16px rgba(255,218,95,.75), inset 0 0 10px rgba(255,220,120,.25)!important;
+}
+#recentRecords .kp-compact-card.open .kp-chevron{
+  transform:rotate(180deg)!important;
+}
+#recentRecords .kp-compact-card.open{
+  border-color:#ffe08a!important;
+  box-shadow:0 0 20px rgba(255,207,79,.55), inset 0 0 16px rgba(255,205,90,.10)!important;
+}
+#recentRecords .kp-compact-card .kp-detail{
+  animation:kpDetailOpen .18s ease both;
+}
+@keyframes kpDetailOpen{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:translateY(0)}}
+</style>
 </body></html>
