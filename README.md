@@ -1,3 +1,1 @@
-# KOlayPazar v5.8 Düzenli Basit
-
-GitHub Pages için tek dosyalık sade sürüm.
+KOlayPazar v5.9 Knight Düzenli - GitHub Pages uyumlu tek index.html
