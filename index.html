@@ -194,7 +194,58 @@ body{background:#02050b;overflow-x:hidden}.ko-bg{background:radial-gradient(circ
 }
 @media(max-width:760px){.sidebar .brand{height:120px!important;margin-bottom:14px!important}}
 
-</style></head><body><div class="ko-bg"></div><div class="fog"></div><div class="stars"></div><div class="fog"></div><div id="toast"></div><div class="app"><aside class="sidebar"><div class="brand"><span class="logo">⚔</span>KOlayPazar</div>
+</style>
+<style id="v8-6-menu-fix">
+/* v8.6: sol menü kaydırma çubuğu ve logo beyaz halesi düzeltildi */
+.app{grid-template-columns:300px 1fr!important;}
+.sidebar{
+  width:280px!important;min-width:280px!important;
+  height:calc(100vh - 24px)!important;
+  min-height:0!important;max-height:calc(100vh - 24px)!important;
+  overflow:hidden!important;
+  display:flex!important;flex-direction:column!important;
+  padding:14px 14px 12px!important;
+  scrollbar-width:none!important;
+}
+.sidebar::-webkit-scrollbar{display:none!important;width:0!important;height:0!important;}
+.sidebar .brand{
+  flex:0 0 128px!important;
+  height:128px!important;
+  margin:0 auto 14px!important;
+  width:100%!important;
+  background:
+    radial-gradient(circle at 50% 10%, rgba(255,224,129,.18), transparent 38%),
+    url('assets/menu-logo-clean.png') center/contain no-repeat!important;
+  filter:drop-shadow(0 0 10px rgba(255,210,92,.70)) drop-shadow(0 0 22px rgba(255,157,30,.28))!important;
+}
+.sidebar .brand:before{opacity:.45!important;}
+.sidebar .brand:after{bottom:-5px!important;}
+.navbtn{
+  flex:0 0 auto!important;
+  min-height:45px!important;
+  padding:9px 13px!important;
+  margin:5px 0!important;
+  font-size:16px!important;
+  line-height:1.08!important;
+  display:grid!important;
+  grid-template-columns:28px 1fr!important;
+  align-items:center!important;
+}
+.navbtn .ico{font-size:18px!important;text-align:center!important;}
+.side-foot{
+  margin-top:auto!important;
+  padding-top:10px!important;
+  font-size:12px!important;
+  line-height:1.2!important;
+  flex:0 0 auto!important;
+}
+@media(max-width:760px){
+ .app{display:block!important;}
+ .sidebar{width:auto!important;min-width:0!important;height:auto!important;max-height:none!important;overflow:visible!important;}
+ .sidebar .brand{height:110px!important;flex-basis:110px!important;}
+}
+</style>
+</head><body><div class="ko-bg"></div><div class="fog"></div><div class="stars"></div><div class="fog"></div><div id="toast"></div><div class="app"><aside class="sidebar"><div class="brand"><span class="logo">⚔</span>KOlayPazar</div>
 <button class="navbtn active" data-page="home"><span class="ico">⌂</span><span>Ana Sayfa</span></button>
 <button class="navbtn" data-page="market"><span class="ico">▤</span><span>Pazar Kayıtları</span></button>
 <button class="navbtn" data-page="stock"><span class="ico">▣</span><span>Stok Merkezi</span></button>
