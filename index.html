@@ -266,7 +266,7 @@ const byId=id=>document.getElementById(id);
 const fmt=n=>(Number(n)||0).toLocaleString('tr-TR')+' M';
 function toast(t){let el=byId('toast'); if(!el) return; el.textContent=t; el.style.display='block'; clearTimeout(window._to); window._to=setTimeout(()=>el.style.display='none',2300)}
 function load(){try{let raw=localStorage.getItem(KEY); if(raw)data=JSON.parse(raw); else{for(const k of LEGACY_KEYS){let r=localStorage.getItem(k); if(!r)continue; try{let p=JSON.parse(r); if(Array.isArray(p))data.records=p; else if(Array.isArray(p.records))data.records=p.records; if(data.records.length)break}catch(e){}}} if(!data.settings)data.settings={}; if(data.settings.taxRate===undefined)data.settings.taxRate=3; if(!Array.isArray(data.records))data.records=[]; normalizeOldRecords(); save()}catch(e){data={records:[],settings:{theme:'knight',taxRate:3},version:'8.0'}; save()}}
-function save(){data.version='8.2'; localStorage.setItem(KEY,JSON.stringify(data))}
+function save(){data.version='8.9'; localStorage.setItem(KEY,JSON.stringify(data))}
 function normalizeOldRecords(){data.records.forEach(r=>{if(!r.id)r.id=String(Date.now()+Math.random()); if(!r.date)r.date=new Date().toISOString(); if(r.type==='Al')r.type='Alış'; if(r.status==='Satildi')r.status='Satıldı'; r.qty=Number(r.qty)||1; r.unit=Number(r.unit)||0; r.total=Number(r.total)||r.qty*r.unit; if(!r.rarity)r.rarity='Normal';})}
 function recTotal(r){return Number(r.total)||((Number(r.qty)||0)*(Number(r.unit)||0))}
 function normalizeName(s){return(s||'').trim().toLowerCase()}
@@ -274,7 +274,7 @@ function taxRate(){let v=Number(data.settings?.taxRate); return Number.isFinite(
 function taxFor(r){return isSaleRecord(r)?Math.round(recTotal(r)*taxRate()/100):0}
 function netSale(r){return recTotal(r)-taxFor(r)}
 function avgCostFor(name){const buys=data.records.filter(x=>normalizeName(x.item)===normalizeName(name)&&x.type==='Alış'&&!isReplacedBySale(x)); const totalQty=buys.reduce((a,b)=>a+(Number(b.qty)||0),0); return totalQty?buys.reduce((a,b)=>a+recTotal(b),0)/totalQty:0}
-function isReplacedBySale(r){return data.records.some(x=>x.sourceId===r.id&&x.type==='Satış')}
+function isReplacedBySale(r){return false}
 function isSaleRecord(r){return !isReplacedBySale(r)&&(r.type==='Satış'||(r.type==='Drop'&&r.status==='Satıldı'))}
 function costUnitFor(r){ if(r.type==='Drop')return 0; if(Number.isFinite(Number(r.costUnit)))return Number(r.costUnit); let avg=avgCostFor(r.item); return avg||0 }
 function profitFor(r){ if(!isSaleRecord(r))return 0; const cost=costUnitFor(r)*(Number(r.qty)||1); return Math.round(netSale(r)-cost) }
@@ -443,7 +443,7 @@ function sellStock(id){
   }
   render(); toast(q>=max?'Tamamı satıldı':'Satış işlendi, kalan stok otomatik güncellendi');
 }
-function save(){data.version='8.2'; localStorage.setItem(KEY,JSON.stringify(data))}
+function save(){data.version='8.9'; localStorage.setItem(KEY,JSON.stringify(data))}
 
 load(); if(byId('taxRate')){byId('taxRate').value=taxRate(); byId('taxRate').addEventListener('input',()=>{data.settings.taxRate=Number(byId('taxRate').value)||0; render()})} render();
 
