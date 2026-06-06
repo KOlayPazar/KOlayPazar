@@ -351,7 +351,29 @@ function isFav(r){return favs().includes(r.id)}
 function toggleFav(id){let f=favs(); let i=f.indexOf(id); if(i>=0)f.splice(i,1); else f.push(id); render(); toast(i>=0?'Favoriden çıkarıldı':'Favorilere eklendi')}
 function card(r){let p=profitFor(r),tax=taxFor(r),isStock=r.status!=='Satıldı'&&r.type!=='Satış', pc=p<0?'loss':'profit';return `<div class="card ${r.status==='Satıldı'?'sold':''}"><h3>${r.type==='Satış'?'💰':r.type==='Drop'?'🎁':'🛒'} ${esc(r.item)} <span class="pill">${esc(r.rarity||'Normal')}</span></h3><div class="meta">${new Date(r.date).toLocaleString('tr-TR')} · ${esc(r.status||'Beklemede')}<br>Adet: ${r.qty||1} · Adet Fiyatı: ${fmt(r.unit)} · Toplam: ${fmt(recTotal(r))}${isSaleRecord(r)?`<br><span class="taxline">Vergi: -${fmt(tax)}</span><br><span class="${pc}">${p<0?'Zarar':'Net Kâr'}: ${fmt(p)}</span>`:''}</div><div class="actions">${isStock?`<button class="btn gold small" onclick="sellStock('${r.id}')">Satıldı</button>`:''}<button class="btn ghost small ${isFav(r)?'fav-on':''}" onclick="toggleFav('${r.id}')">♡</button><button class="btn small" onclick="editRec('${r.id}')">Düzenle</button><button class="btn ghost small" onclick="copyRec('${r.id}')">Kopyala</button><button class="btn red small" onclick="delRec('${r.id}')">Sil</button></div></div>`}
 function setMoneyClass(el,value){if(!el)return; el.classList.remove('green','red','profit','loss'); el.classList.add(value<0?'loss':'profit')}
-function render(){save(); const rec=data.records; const sales=rec.filter(isSaleRecord); const stock=rec.filter(r=>r.status!=='Satıldı'&&r.type!=='Satış'&&!isReplacedBySale(r)); const profit=sales.reduce((a,r)=>a+profitFor(r),0); const tax=sales.reduce((a,r)=>a+taxFor(r),0); byId('sCount').textContent=rec.filter(r=>!isReplacedBySale(r)).length; byId('sProfit').textContent=fmt(profit); setMoneyClass(byId('sProfit'),profit); if(byId('sTax'))byId('sTax').textContent='-'+fmt(tax); byId('sStock').textContent=stock.reduce((a,r)=>a+(Number(r.qty)||0),0); byId('sAvg').textContent=fmt(sales.length?sales.reduce((a,r)=>a+recTotal(r),0)/sales.length:0); renderHot(); renderRecords(); renderGB(); renderHistory(); renderStock(); renderTrade(); renderProfit(); renderFavorites(); }
+function render(){
+  save();
+  const rec=data.records||[];
+  const sales=rec.filter(isSaleRecord);
+  const stock=rec.filter(r=>r.status!=='Satıldı'&&r.type!=='Satış'&&!isReplacedBySale(r));
+  const profit=sales.reduce((a,r)=>a+profitFor(r),0);
+  const tax=sales.reduce((a,r)=>a+taxFor(r),0);
+  const setText=(id,val)=>{let el=byId(id); if(el)el.textContent=val};
+  setText('sCount',rec.filter(r=>!isReplacedBySale(r)).length);
+  setText('sProfit',fmt(profit)); setMoneyClass(byId('sProfit'),profit);
+  setText('sTax','-'+fmt(tax));
+  setText('sStock',stock.reduce((a,r)=>a+(Number(r.qty)||0),0));
+  setText('sAvg',fmt(sales.length?sales.reduce((a,r)=>a+recTotal(r),0)/sales.length:0));
+  try{ if(byId('hotItems'))renderHot(); }catch(e){console.warn('renderHot',e)}
+  try{ if(byId('recentRecords')||byId('allRecords'))renderRecords(); }catch(e){console.warn('renderRecords',e)}
+  try{ if(byId('gbList')||byId('miniChart'))renderGB(); }catch(e){console.warn('renderGB',e)}
+  try{ if(byId('historyList'))renderHistory(); }catch(e){console.warn('renderHistory',e)}
+  try{ if(byId('stockList')||byId('stockValue')||byId('stockCount')||byId('pendingProfit'))renderStock(); }catch(e){console.warn('renderStock',e)}
+  try{ if(byId('tradeList')||byId('buyList')||byId('sellList'))renderTrade(); }catch(e){console.warn('renderTrade',e)}
+  try{ if(byId('profitList')||byId('profitSummary'))renderProfit(); }catch(e){console.warn('renderProfit',e)}
+  try{ if(byId('favoriteList'))renderFavorites(); }catch(e){console.warn('renderFavorites',e)}
+  try{ if(typeof renderV9Dashboard==='function')renderV9Dashboard(); }catch(e){console.warn('renderV9Dashboard',e)}
+}
 function renderRecords(){let sorted=[...data.records].filter(r=>!isReplacedBySale(r)).sort((a,b)=>new Date(b.date)-new Date(a.date)); byId('recentRecords').innerHTML=sorted.slice(0,6).map(card).join('')||'<p class="muted">Henüz kayıt yok.</p>'; if(byId('allRecords'))byId('allRecords').innerHTML=sorted.map(card).join('')||'<p class="muted">Henüz kayıt yok.</p>'}
 function renderHot(){let map={};data.records.filter(r=>!isReplacedBySale(r)).forEach(r=>{let n=r.item||'İsimsiz';map[n]=(map[n]||0)+1});let rows=Object.entries(map).sort((a,b)=>b[1]-a[1]).slice(0,6);byId('hotItems').innerHTML=rows.map(([n,c])=>`<div class="listrow"><b>${esc(n)}</b><span class="pill">${c} kayıt</span></div>`).join('')||'Henüz veri yok.'}
 function renderGB(){let gb=[['Pandora','2.845','2.925','+1.45%'],['Destan','2.750','2.815','+1.12%'],['Zero','2.880','2.960','+1.67%'],['Agartha','2.940','3.020','+1.85%']];byId('gbList').innerHTML=gb.map(x=>`<div class="gbrow"><b>🛡️ ${x[0]}</b><span>Alış: ${x[1]}</span><span class="green">${x[3]}</span></div>`).join('');byId('miniChart').innerHTML=[35,48,42,58,51,73,62,80].map(h=>`<div class="bar" style="height:${h}%"></div>`).join('')}
@@ -858,8 +880,7 @@ load(); if(byId('taxRate')){byId('taxRate').value=taxRate(); byId('taxRate').add
     let best=sales.slice().sort((a,b)=>profitFor(b)-profitFor(a))[0];
     byId('v9ProfitExample').innerHTML=best?('<b>'+esc(best.item||'İtem')+'</b><br>Satış: '+safeFmt(recTotal(best))+'<br>Net Kâr: <b class="green">'+safeFmt(profitFor(best))+'</b>'):'Henüz satış verisi yok.';
   };
-  const oldRender=window.render; window.render=function(){oldRender(); renderV9Dashboard();};
-  setTimeout(()=>{try{recoverBestLocalData&&load(); render(); renderV9Dashboard();}catch(e){console.error(e)}},50);
+  setTimeout(()=>{try{ if(typeof load==='function')load(); if(typeof render==='function')render(); renderV9Dashboard(); }catch(e){console.error(e)}},50);
 })();
 </script>
 </body></html>
