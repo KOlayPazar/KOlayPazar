@@ -1063,4 +1063,163 @@ load(); if(byId('taxRate')){byId('taxRate').value=taxRate(); byId('taxRate').add
   setTimeout(()=>{try{window.render()}catch(e){console.error('KOlayPazar v9.10 render hata:',e); renderStockFixed(); renderV9Fixed();}},50);
 })();
 </script>
+
+
+<script>
+/* === KOlayPazar v9.11 FINAL: Sil butonu + Kâr Analizi kesin düzeltme === */
+(function(){
+  const KEY='KOlayPazar_data_v1';
+  function $(id){return document.getElementById(id)}
+  function clean(v){return (v==null?'':String(v)).trim()}
+  function num(v){
+    if(typeof v==='string') v=v.replace(/\s/g,'').replace(/M$/i,'').replace(/cash$/i,'').replace(/\./g,'').replace(',', '.');
+    return Number(v)||0;
+  }
+  function money(v){
+    try{ if(typeof fmt==='function') return fmt(num(v)); }catch(e){}
+    return Math.round(num(v)).toLocaleString('tr-TR')+' M';
+  }
+  function htmlEsc(v){
+    try{ if(typeof esc==='function') return esc(v); }catch(e){}
+    return clean(v).replace(/[&<>"']/g,function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]});
+  }
+  function ensure(){
+    if(!window.data || typeof data!=='object') data={records:[],settings:{taxRate:3,favorites:[]}};
+    if(!Array.isArray(data.records)) data.records=[];
+    if(!data.settings) data.settings={taxRate:3,favorites:[]};
+    data.records.forEach(function(r,i){
+      if(!r || typeof r!=='object') return;
+      if(!r.id) r.id='kp_'+Date.now()+'_'+i+'_'+Math.random().toString(36).slice(2);
+      if(!r.item){ r.item=r.itemName||r.name||r.ad||r.urun||r.title||'İsmi Kurtarılamayan Kayıt'; }
+      r.qty=num(r.qty||r.quantity||r.adet||r.count)||1;
+      r.unit=num(r.unit||r.unitPrice||r.price||r.fiyat||r.birimFiyat);
+      r.total=num(r.total||r.totalPrice||r.tutar||r.toplam)||(r.qty*r.unit);
+      if(!r.status) r.status=r.sold?'Satıldı':'Beklemede';
+      if(r.status==='Satildi') r.status='Satıldı';
+      if(r.type==='Sell') r.type='Satış';
+      if(r.type==='Buy'||r.type==='Al') r.type='Alış';
+      if(!r.type) r.type='Drop';
+      if(!r.date) r.date=new Date().toISOString();
+    });
+  }
+  function saveAll(){
+    ensure();
+    try{ localStorage.setItem(KEY, JSON.stringify(data)); }catch(e){}
+    try{ if(typeof save==='function') save(); }catch(e){}
+  }
+  function recTotal(r){ try{ if(typeof window.recTotal==='function') return window.recTotal(r); }catch(e){} return num(r.total)||(num(r.qty)*num(r.unit)); }
+  function isSold(r){
+    const st=clean(r.status).toLowerCase();
+    return clean(r.type)==='Satış' || st.includes('satıldı') || st.includes('satildi') || st.includes('kısmi satıldı') || st.includes('kismi satildi');
+  }
+  function taxForSafe(r){ try{ if(typeof taxFor==='function') return taxFor(r); }catch(e){} return Math.round(recTotal(r)*(num(data?.settings?.taxRate)||3)/100); }
+  function costForSafe(r){ try{ if(typeof costUnitFor==='function') return costUnitFor(r); }catch(e){} return num(r.costUnit||r.buyUnit||r.purchaseUnit||r.buyPrice||r.alisFiyat); }
+  function profitForSafe(r){
+    try{ if(typeof profitFor==='function') return profitFor(r); }catch(e){}
+    return Math.round(recTotal(r)-taxForSafe(r)-costForSafe(r)*num(r.qty));
+  }
+  function itemName(r){return clean(r.item||r.itemName||r.name||r.ad||r.title)||'İsmi Kurtarılamayan Kayıt'}
+  function stockRows(){return data.records.filter(function(r){return !isSold(r) && clean(r.type)!=='Satış' && num(r.qty)>0})}
+  function salesRows(){return data.records.filter(isSold)}
+
+  window.delRec=function(id){
+    ensure();
+    id=clean(id);
+    const before=data.records.length;
+    const target=data.records.find(function(r){return clean(r.id)===id || clean(r.sourceId)===id || clean(r.parentId)===id});
+    const name=target?itemName(target):'bu kayıt';
+    if(!confirm(name+' silinsin mi?')) return;
+    data.records=data.records.filter(function(r){
+      return clean(r.id)!==id && clean(r.sourceId)!==id && clean(r.parentId)!==id && clean(r.originalId)!==id;
+    });
+    if(data.settings && Array.isArray(data.settings.favorites)) data.settings.favorites=data.settings.favorites.filter(function(x){return clean(x)!==id});
+    saveAll();
+    try{ if(typeof render==='function') render(); }catch(e){ console.error(e); }
+    renderProfitFinal(); renderStockFinal(); renderV9Final(); renderTradeFinal();
+    const after=data.records.length;
+    try{ if(typeof toast==='function') toast(after<before?'Kayıt silindi':'Silinecek kayıt bulunamadı'); }catch(e){ alert(after<before?'Kayıt silindi':'Silinecek kayıt bulunamadı'); }
+  };
+
+  function renderProfitFinal(){
+    ensure();
+    const box=$('profitSummary'), list=$('profitList');
+    if(!box && !list) return;
+    const sales=salesRows();
+    const gross=sales.reduce((a,r)=>a+recTotal(r),0);
+    const tax=sales.reduce((a,r)=>a+taxForSafe(r),0);
+    const profit=sales.reduce((a,r)=>a+profitForSafe(r),0);
+    if(box){
+      box.innerHTML='<div class="profit-box"><span class="muted">Brüt Satış</span><br><b>'+money(gross)+'</b></div>'+ 
+        '<div class="profit-box"><span class="muted">Toplam Vergi</span><br><b class="loss">-'+money(tax)+'</b></div>'+ 
+        '<div class="profit-box"><span class="muted">Net Kâr / Zarar</span><br><b class="'+(profit<0?'loss':'profit')+'">'+money(profit)+'</b></div>';
+    }
+    if(list){
+      const map={};
+      sales.forEach(function(r){
+        const k=itemName(r); if(!map[k]) map[k]={qty:0,gross:0,tax:0,profit:0};
+        map[k].qty+=num(r.qty); map[k].gross+=recTotal(r); map[k].tax+=taxForSafe(r); map[k].profit+=profitForSafe(r);
+      });
+      list.innerHTML=Object.entries(map).sort((a,b)=>b[1].profit-a[1].profit).map(function(pair){
+        const name=pair[0], x=pair[1];
+        return '<div class="listrow"><div><b>'+htmlEsc(name)+'</b><br><span class="muted">'+x.qty+' adet · Brüt '+money(x.gross)+' · Vergi -'+money(x.tax)+'</span></div><b class="'+(x.profit<0?'loss':'profit')+'">'+(x.profit<0?'Zarar':'Kâr')+': '+money(x.profit)+'</b></div>';
+      }).join('') || '<p class="muted">Henüz satış kaydı yok.</p>';
+    }
+  }
+  function renderStockFinal(){
+    ensure();
+    if(!$('stockList')) return;
+    const stock=stockRows();
+    $('stockList').innerHTML=stock.map(function(r){
+      return '<div class="listrow"><div><b>'+htmlEsc(itemName(r))+'</b><br><span class="muted">'+num(r.qty)+' adet · Alış/Değer '+money(num(r.unit))+' · '+htmlEsc(r.status||'Beklemede')+'</span></div><div class="actions"><button class="btn gold small" onclick="sellStock(\''+clean(r.id)+'\')">Satıldı</button><button class="btn small" onclick="editRec(\''+clean(r.id)+'\')">Düzenle</button><button class="btn red small" onclick="delRec(\''+clean(r.id)+'\')">Sil</button></div></div>';
+    }).join('') || '<p class="muted">Stokta kayıt yok.</p>';
+    if($('stockValue')) $('stockValue').textContent=money(stock.reduce((a,r)=>a+recTotal(r),0));
+    if($('stockCount')) $('stockCount').textContent=stock.reduce((a,r)=>a+num(r.qty),0);
+    if($('pendingProfit')) $('pendingProfit').textContent=money(stock.reduce((a,r)=>a+recTotal(r),0));
+  }
+  function renderTradeFinal(){
+    ensure();
+    if($('buyHistory')){
+      const buys=data.records.filter(r=>clean(r.type)==='Alış');
+      $('buyHistory').innerHTML=buys.map(r=>'<div class="listrow"><div><b>'+htmlEsc(itemName(r))+'</b><br><span class="muted">'+num(r.qty)+' adet · '+money(num(r.unit))+' · Toplam '+money(recTotal(r))+'</span></div></div>').join('') || '<p class="muted">Alış kaydı yok.</p>';
+    }
+    if($('sellHistory')){
+      const sales=salesRows();
+      $('sellHistory').innerHTML=sales.map(r=>'<div class="listrow"><div><b>'+htmlEsc(itemName(r))+'</b><br><span class="muted">'+num(r.qty)+' adet · Satış '+money(num(r.unit))+' · Net '+money(profitForSafe(r))+'</span></div></div>').join('') || '<p class="muted">Satış kaydı yok.</p>';
+    }
+  }
+  function icon(r){const x=itemName(r).toLowerCase(); if(x.includes('scroll'))return '📜'; if(x.includes('gem')||x.includes('crystal')||x.includes('fragment'))return '💎'; if(x.includes('coin'))return '🪙'; if(x.includes('hammer'))return '🔨'; if(x.includes('chest'))return '🎁'; if(x.includes('breaker')||x.includes('sword')||x.includes('raptor')||x.includes('shard'))return '⚔️'; return '🔷'}
+  function badge(r){const st=clean(r.status)||'Beklemede'; return '<span class="v9badge '+(isSold(r)?'ok':'')+'">'+htmlEsc(st)+'</span>'}
+  function v9row(r){const id=clean(r.id); return '<tr><td><div class="v9item"><span class="v9itemIcon">'+icon(r)+'</span><div><b>'+htmlEsc(itemName(r))+'</b><small>'+htmlEsc(r.rarity||'Normal')+'</small></div></div></td><td>'+num(r.qty)+'</td><td>'+money(num(r.unit))+'</td><td>'+money(recTotal(r))+'</td><td>'+badge(r)+'</td><td><div class="v9actions"><button type="button" onclick="editRec(\''+id+'\')">✎</button><button type="button" class="del" onclick="delRec(\''+id+'\')">🗑</button></div></td></tr>'}
+  function renderV9Final(){
+    ensure();
+    if(!$('v9SellRows')) return;
+    const buy=data.records.filter(r=>clean(r.type)==='Alış');
+    const sell=data.records.filter(r=>clean(r.type)!=='Alış');
+    const stock=stockRows(), sales=salesRows();
+    const profit=sales.reduce((a,r)=>a+profitForSafe(r),0);
+    const capital=stock.reduce((a,r)=>a+recTotal(r),0)+profit;
+    if($('v9Capital')) $('v9Capital').textContent=money(capital);
+    if($('v9Profit')) $('v9Profit').textContent=money(profit);
+    if($('v9Active')) $('v9Active').textContent=stock.length;
+    if($('v9Done')) $('v9Done').textContent=sales.length;
+    $('v9SellRows').innerHTML=sell.slice(0,40).map(v9row).join('') || '<tr><td class="v9empty" colspan="6">Henüz Sell Pazar kaydı yok.</td></tr>';
+    $('v9BuyRows').innerHTML=buy.slice(0,40).map(v9row).join('') || '<tr><td class="v9empty" colspan="6">Henüz Buy Pazar kaydı yok.</td></tr>';
+    if($('v9SellPending')) $('v9SellPending').textContent=money(sell.filter(r=>!isSold(r)).reduce((a,r)=>a+recTotal(r),0));
+    if($('v9SellDone')) $('v9SellDone').textContent=money(sales.reduce((a,r)=>a+recTotal(r),0));
+    if($('v9BuyPending')) $('v9BuyPending').textContent=money(buy.filter(r=>!isSold(r)).reduce((a,r)=>a+recTotal(r),0));
+    if($('v9BuyDone')) $('v9BuyDone').textContent=money(buy.filter(isSold).reduce((a,r)=>a+recTotal(r),0));
+    const best=sales.slice().sort((a,b)=>profitForSafe(b)-profitForSafe(a))[0];
+    if($('v9ProfitExample')) $('v9ProfitExample').innerHTML=best?'<b>'+htmlEsc(itemName(best))+'</b><br>Satış: '+money(recTotal(best))+'<br>Net: <b class="green">'+money(profitForSafe(best))+'</b>':'Henüz satış verisi yok.';
+  }
+  window.renderProfitFinal=renderProfitFinal;
+  const prevRender=window.render;
+  window.render=function(){ ensure(); try{ if(typeof prevRender==='function') prevRender(); }catch(e){ console.warn('Eski render atlandı:',e); } renderStockFinal(); renderTradeFinal(); renderProfitFinal(); renderV9Final(); saveAll(); };
+  const oldShow=window.showPage;
+  window.showPage=function(p){ try{ if(typeof oldShow==='function') oldShow(p); }catch(e){} setTimeout(function(){renderStockFinal();renderTradeFinal();renderProfitFinal();renderV9Final();},20); };
+  document.addEventListener('click',function(e){
+    const b=e.target.closest('[data-page]'); if(b) setTimeout(function(){renderStockFinal();renderTradeFinal();renderProfitFinal();renderV9Final();},30);
+  });
+  setTimeout(function(){ try{window.render();}catch(e){console.error(e); renderStockFinal(); renderProfitFinal(); renderV9Final();}},120);
+})();
+</script>
 </body></html>
