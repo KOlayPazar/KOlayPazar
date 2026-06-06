@@ -1,19 +1,5 @@
-KOlayPazar V9 - Knight Pazar Paneli
-
-İçerik:
-- index.html
-- style.css
-- script.js
-
-Özellikler:
-- Görseldeki Knight Online tarzı koyu/altın panel tasarımı
-- Sell Pazar ve Buy Pazar ayrı tablolar
-- Adet, birim fiyat ve toplam otomatik hesaplama
-- Satılan/alınan adet girince stok doğru azalır
-- Kısmi Satıldı / Kısmi Alındı sistemi
-- Üst istatistik kartları
-- Mobil uyumlu görünüm
-- Veriler şimdilik tarayıcı localStorage içinde saklanır
-
-Kurulum:
-GitHub Pages için bu klasördeki dosyaları repoya yükleyin.
+KOlayPazar V9.2 Veri Kurtarma
+- V8.9 verilerini KOlayPazar_data_v1 anahtarından içe alır.
+- V9 demo kayıtlarını tek tek temizler.
+- Eski V9 içindeki gerçek kayıtları koruyup demo kayıtları atar.
+- Tarayıcı verilerini silmeyin. GitHub Pages yükledikten sonra Ctrl+F5 ile yenileyin.

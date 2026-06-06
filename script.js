@@ -25,10 +25,33 @@ function readJson(key){
   }catch(e){ return null; }
 }
 
+function isDemoRecord(r){
+  const name = String(r.itemName || r.item || '').toLowerCase().trim();
+  const qty = Number(r.qty ?? r.quantity ?? 0) || 0;
+  const unit = Number(r.unitPrice ?? r.unit ?? r.price ?? 0) || 0;
+  const type = String(r.type || '').toLowerCase();
+  const demo = [
+    ['sell','upgrade scroll',200,50000],
+    ['sell','fragment of sloth',100,1200000],
+    ['sell','gem of life',50,2500000],
+    ['sell','weapon breaker',150,650000],
+    ['sell','old coins',1000,100000],
+    ['buy','upgrade scroll',200,45000],
+    ['buy','fragment of sloth',100,1000000],
+    ['buy','gem of life',50,2200000],
+    ['buy','weapon breaker',150,600000],
+    ['buy','old coins',1000,90000],
+  ];
+  return demo.some(([dt,dn,dq,du]) => type === dt && name === dn && qty === dq && unit === du);
+}
+
 function looksLikeDemo(arr){
-  if(!Array.isArray(arr) || arr.length !== 10) return false;
-  const names = arr.map(r => r.itemName || r.item || '').join('|').toLowerCase();
-  return names.includes('upgrade scroll') && names.includes('fragment of sloth') && names.includes('gem of life') && names.includes('weapon breaker') && names.includes('old coins');
+  if(!Array.isArray(arr)) return false;
+  return arr.filter(isDemoRecord).length >= 5;
+}
+
+function cleanDemoRecords(arr){
+  return Array.isArray(arr) ? arr.filter(r => !isDemoRecord(r)) : [];
 }
 
 function normalizeV9Record(r){
@@ -95,17 +118,28 @@ function loadRecords(){
   const legacy = getLegacyRecords();
   const hasLegacy = legacy.records.length > 0;
 
-  if(Array.isArray(existingV9) && existingV9.length && !looksLikeDemo(existingV9)){
-    return existingV9.map(normalizeV9Record);
-  }
+  const v9HasDemo = looksLikeDemo(existingV9);
+  const cleanV9 = cleanDemoRecords(existingV9).map(normalizeV9Record);
 
   if(hasLegacy){
     try{
-      localStorage.setItem('KOlayPazar_v9_migration_backup_' + new Date().toISOString().slice(0,10), JSON.stringify({sourceKey: legacy.key, records: legacy.records}));
+      localStorage.setItem('KOlayPazar_v9_migration_backup_' + new Date().toISOString().slice(0,10), JSON.stringify({sourceKey: legacy.key, records: legacy.records, oldV9: existingV9 || []}));
     }catch(e){}
     const migrated = legacy.records.map(legacyToV9);
-    localStorage.setItem(V9_KEY, JSON.stringify(migrated));
-    return migrated;
+    // V9 içindeki gerçek kullanıcı kayıtlarını koru, demo kayıtlarını at.
+    const merged = [...migrated];
+    for(const r of cleanV9){
+      const same = merged.some(x => x.id === r.id || (x.itemName === r.itemName && x.qty === r.qty && x.unitPrice === r.unitPrice && x.date === r.date));
+      if(!same) merged.push(r);
+    }
+    localStorage.setItem(V9_KEY, JSON.stringify(merged));
+    return merged;
+  }
+
+  if(Array.isArray(existingV9) && existingV9.length){
+    // Eski V9 demo kayıtları tarayıcıda kalmışsa burada temizlenir.
+    localStorage.setItem(V9_KEY, JSON.stringify(cleanV9));
+    return cleanV9;
   }
 
   // Kritik: Artık demo veriler yüklenmez. Veri yoksa site boş başlar.
@@ -191,4 +225,5 @@ document.getElementById('actionForm').addEventListener('submit', e=>{
 function removeRecord(id){ if(confirm('Bu ilan silinsin mi?')){records=records.filter(r=>r.id!==id); render();} }
 function toast(msg){ const t=document.createElement('div'); t.textContent=msg; t.style.cssText='position:fixed;right:18px;bottom:18px;background:#142015;border:1px solid #6ca85c;color:#fff;padding:14px 18px;border-radius:10px;z-index:99;box-shadow:0 10px 40px #000'; document.body.appendChild(t); setTimeout(()=>t.remove(),1800); }
 
+console.log('KOlayPazar V9.2 veri korumalı sürüm aktif - demo temizleme açık');
 render();
