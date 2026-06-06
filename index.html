@@ -290,13 +290,50 @@ body{background:#02050b;overflow-x:hidden}.ko-bg{background:radial-gradient(circ
 <section id="history" class="page"><div class="two"><div class="panel"><h2>Fiyat Geçmişi</h2><div id="historyList"></div></div><div class="panel"><h2>İtem Analizi</h2><div id="analysisBox" class="muted">Bir item geçmişi olduğunda burada ortalama fiyat, vergi ve net kâr/zarar görünür.</div><div class="chart" id="historyChart" style="margin-top:14px"></div></div></div></section><section id="trade" class="page"><div class="two"><div class="panel"><h2>Alış Geçmişi</h2><div id="buyHistory"></div></div><div class="panel"><h2>Satış Geçmişi</h2><div id="sellHistory"></div></div></div></section><section id="profit" class="page"><div class="panel"><h2>Kâr Analizi</h2><div id="profitSummary" class="profit-card"></div></div><div class="panel" style="margin-top:16px"><h2>İtem Bazlı Net Kâr / Zarar</h2><div id="profitList"></div></div></section><section id="favorites" class="page"><div class="panel"><h2>Favoriler</h2><div id="favoriteList" class="records"></div></div></section><section id="stock" class="page"><div class="two"><div class="panel"><h2>Stok Merkezi</h2><div id="stockList"></div></div><div class="panel"><h2>Stok Özeti</h2><div class="stat"><span>Toplam Stok Değeri</span><b id="stockValue" class="yellow">0 M</b></div><div class="stat"><span>Bekleyen İtem Sayısı</span><b id="stockCount" class="blue">0</b></div><div class="stat"><span>Tahmini Kâr</span><b id="pendingProfit" class="green">0 M</b></div></div></div></section><section id="settings" class="page"><div class="two"><div class="panel"><h2>⚙️ Ayarlar</h2><div class="listrow"><div><b>Pazar Vergisi (%)</b><br><span class="muted">Satış gelirinden otomatik düşülür. Varsayılan: 3</span></div><input id="taxRate" type="number" min="0" max="50" step="0.1" style="max-width:120px" value="3"></div><div class="listrow"><div><b>Veri Yedekle</b><br><span class="muted">Tüm kayıtlarını JSON olarak indir.</span></div><button class="btn gold small" id="backupBtn">Yedekle</button></div><div class="listrow"><div><b>Veri Geri Yükle</b><br><span class="muted">Önceden aldığın yedeği içeri aktar.</span></div><button class="btn small" id="restoreBtn">Geri Yükle</button></div><div class="listrow"><div><b>Verileri Kopyala</b><br><span class="muted">Yedek metni panoya kopyalar.</span></div><button class="btn ghost small" id="copyBtn">Kopyala</button></div><div class="listrow"><div><b>Tüm Kayıtları Sil</b><br><span class="muted">Sadece bu tarayıcıdaki verileri temizler.</span></div><button class="btn red small" id="clearBtn">Sil</button></div><input type="file" id="restoreFile" accept="application/json" hidden></div><div class="panel"><h2>Veri Koruma</h2><p>Bu sürüm sabit anahtar kullanır: <b>KOlayPazar_data_v1</b></p><p class="muted">Yeni zip yüklediğinde aynı tarayıcıdaki kayıtların korunur. Yine de önemli kayıtlar için ara sıra yedek al.</p></div></div></section></main></div>
 <script>
 const KEY='KOlayPazar_data_v1';
-const LEGACY_KEYS=['kolaypazarData','KOlayPazar_v59','KOlayPazar_v60','kp_records','records','marketRecords'];
+const LEGACY_KEYS=['kolaypazarData','KOlayPazar_v59','KOlayPazar_v60','kp_records','records','marketRecords','kolaypazar_v9_records','KOlayPazar_v9_records','KOlayPazar_backup_v89','KOlayPazar_data_backup','KOlayPazar_data_v1_backup'];
 let data={records:[],settings:{theme:'knight',taxRate:3},version:'8.0'};
 const byId=id=>document.getElementById(id);
 const fmt=n=>(Number(n)||0).toLocaleString('tr-TR')+' M';
 function toast(t){let el=byId('toast'); if(!el) return; el.textContent=t; el.style.display='block'; clearTimeout(window._to); window._to=setTimeout(()=>el.style.display='none',2300)}
-function load(){try{let raw=localStorage.getItem(KEY); if(raw)data=JSON.parse(raw); else{for(const k of LEGACY_KEYS){let r=localStorage.getItem(k); if(!r)continue; try{let p=JSON.parse(r); if(Array.isArray(p))data.records=p; else if(Array.isArray(p.records))data.records=p.records; if(data.records.length)break}catch(e){}}} if(!data.settings)data.settings={}; if(data.settings.taxRate===undefined)data.settings.taxRate=3; if(!Array.isArray(data.records))data.records=[]; normalizeOldRecords(); save()}catch(e){data={records:[],settings:{theme:'knight',taxRate:3},version:'8.0'}; save()}}
-function save(){data.version='8.9'; localStorage.setItem(KEY,JSON.stringify(data))}
+function _recordsFromParsed(p){
+  if(!p)return [];
+  if(Array.isArray(p))return p;
+  if(Array.isArray(p.records))return p.records;
+  if(Array.isArray(p.items))return p.items;
+  if(Array.isArray(p.marketRecords))return p.marketRecords;
+  if(p.data&&Array.isArray(p.data.records))return p.data.records;
+  return [];
+}
+function _validRecordCount(arr){return (arr||[]).filter(x=>x&&typeof x==='object'&&(x.item||x.name||x.itemName)).length}
+function recoverBestLocalData(){
+  let best={records:[],key:''};
+  const keys=[];
+  try{for(let i=0;i<localStorage.length;i++)keys.push(localStorage.key(i));}catch(e){}
+  [...new Set([KEY,...LEGACY_KEYS,...keys])].forEach(k=>{
+    try{
+      let raw=localStorage.getItem(k); if(!raw)return;
+      let p=JSON.parse(raw); let rec=_recordsFromParsed(p); let c=_validRecordCount(rec);
+      if(c>_validRecordCount(best.records)) best={records:rec,settings:(p&&p.settings)||{},key:k};
+    }catch(e){}
+  });
+  return best;
+}
+function load(){
+  try{
+    let raw=localStorage.getItem(KEY);
+    if(raw){try{data=JSON.parse(raw)}catch(e){data={records:[],settings:{theme:'knight',taxRate:3},version:'8.0'}}}
+    else data={records:[],settings:{theme:'knight',taxRate:3},version:'8.0'};
+
+    let best=recoverBestLocalData();
+    if(_validRecordCount(best.records)>_validRecordCount(data.records)){
+      data.records=best.records;
+      data.settings={...(data.settings||{}),...(best.settings||{})};
+      try{localStorage.setItem('KOlayPazar_recovered_from_'+best.key, JSON.stringify({records:best.records,settings:best.settings||{},date:new Date().toISOString()}));}catch(e){}
+    }
+    if(!data.settings)data.settings={}; if(data.settings.taxRate===undefined)data.settings.taxRate=3; if(!Array.isArray(data.records))data.records=[]; normalizeOldRecords(); save();
+  }catch(e){data={records:[],settings:{theme:'knight',taxRate:3},version:'8.0'}; save()}
+}
+function save(){data.version='9.5'; try{localStorage.setItem('KOlayPazar_auto_backup_before_v95',localStorage.getItem(KEY)||'')}catch(e){} localStorage.setItem(KEY,JSON.stringify(data))}
 function normalizeOldRecords(){data.records.forEach(r=>{if(!r.id)r.id=String(Date.now()+Math.random()); if(!r.date)r.date=new Date().toISOString(); if(r.type==='Al')r.type='Alış'; if(r.status==='Satildi')r.status='Satıldı'; r.qty=Number(r.qty)||1; r.unit=Number(r.unit)||0; r.total=Number(r.total)||r.qty*r.unit; if(!r.rarity)r.rarity='Normal';})}
 function recTotal(r){return Number(r.total)||((Number(r.qty)||0)*(Number(r.unit)||0))}
 function normalizeName(s){return(s||'').trim().toLowerCase()}
@@ -803,7 +840,7 @@ load(); if(byId('taxRate')){byId('taxRate').value=taxRate(); byId('taxRate').add
   function activeRecords(){return (data.records||[]).filter(r=>!isReplacedBySale(r));}
   function iconFor(r){const n=(r.item||'').toLowerCase(); if(n.includes('scroll'))return '📜'; if(n.includes('gem')||n.includes('crystal'))return '💎'; if(n.includes('coin'))return '🪙'; if(n.includes('hammer'))return '🔨'; if(n.includes('chest'))return '🎁'; if(n.includes('sword')||n.includes('breaker')||n.includes('raptor'))return '⚔️'; return '🔷'}
   function statusBadge(r){let st=r.status||'Beklemede'; let cls=st==='Satıldı'?'ok':(String(st).includes('Kısmi')?'part':''); return '<span class="v9badge '+cls+'">'+esc(st)+'</span>'}
-  function row(r,buy){let total=recTotal(r);return '<tr><td><div class="v9item"><span class="v9itemIcon">'+iconFor(r)+'</span><div><b>'+esc(r.item||'İsimsiz')+'</b><small>'+esc(r.rarity||'Normal')+'</small></div></div></td><td>'+(Number(r.qty)||0)+'</td><td>'+safeFmt(r.unit||0)+'</td><td>'+safeFmt(total)+'</td><td>'+statusBadge(r)+'</td><td><div class="v9actions"><button onclick="editRec(''+r.id+'')">✎</button><button class="del" onclick="delRec(''+r.id+'')">🗑</button></div></td></tr>'}
+  function row(r,buy){let total=recTotal(r), id=String(r.id||'').replace(/'/g,'\\'');return '<tr><td><div class="v9item"><span class="v9itemIcon">'+iconFor(r)+'</span><div><b>'+esc(r.item||'İsimsiz')+'</b><small>'+esc(r.rarity||'Normal')+'</small></div></div></td><td>'+(Number(r.qty)||0)+'</td><td>'+safeFmt(r.unit||0)+'</td><td>'+safeFmt(total)+'</td><td>'+statusBadge(r)+'</td><td><div class="v9actions"><button onclick="editRec(\''+id+'\')">✎</button><button class="del" onclick="delRec(\''+id+'\')">🗑</button></div></td></tr>'}
   window.renderV9Dashboard=function(){
     if(!document.getElementById('v9SellRows'))return;
     const all=activeRecords();
@@ -822,6 +859,7 @@ load(); if(byId('taxRate')){byId('taxRate').value=taxRate(); byId('taxRate').add
     byId('v9ProfitExample').innerHTML=best?('<b>'+esc(best.item||'İtem')+'</b><br>Satış: '+safeFmt(recTotal(best))+'<br>Net Kâr: <b class="green">'+safeFmt(profitFor(best))+'</b>'):'Henüz satış verisi yok.';
   };
   const oldRender=window.render; window.render=function(){oldRender(); renderV9Dashboard();};
+  setTimeout(()=>{try{recoverBestLocalData&&load(); render(); renderV9Dashboard();}catch(e){console.error(e)}},50);
 })();
 </script>
 </body></html>
